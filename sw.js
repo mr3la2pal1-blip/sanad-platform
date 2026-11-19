@@ -4,7 +4,7 @@ self.addEventListener("activate",e=>e.waitUntil(caches.keys().then(k=>Promise.al
 self.addEventListener("fetch",e=>{
  if(e.request.method!=="GET")return;
  const u=new URL(e.request.url);
- if(u.origin===self.location.origin && /^\\/admin\\/?$/.test(u.pathname)){
+ if(u.origin===self.location.origin && (u.pathname==="/admin"||u.pathname==="/admin/")){
   e.respondWith(Response.redirect(new URL("/admin.html"+u.search+u.hash,self.location.origin),302));
   return;
  }
