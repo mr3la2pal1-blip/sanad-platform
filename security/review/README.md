@@ -42,7 +42,11 @@ The password-reset counter is stored in browser localStorage and is therefore no
 - `security/review/001_case_assignments_foundation.sql`: guarded draft for the case-level assignment foundation only. It is explicitly not a production-ready migration.
 - `security/review/002_recommended_role_and_assignment_model.md`: recommended least-privilege role matrix, separate orphan-level assignment design, field boundaries, RLS migration rules, acceptance tests, and staged deployment sequence.
 - `security/review/003_role_rls_migration_draft.sql`: proposed full role/assignment RLS migration draft. It replaces existing policies on the listed tables and must be reviewed and tested in staging. It does not provide role-specific financial column isolation; that requires a separate view/API and grants design.
-- `security/review/004_pre_execution_security_review.md`: review findings and mandatory blockers before migration 003 can be safely corrected and tested.
+- `security/review/004_pre_execution_security_review.md`: initial pre-execution findings; migration 003 remains blocked and is retained as historical draft.
+- `security/review/005_corrected_role_rls_migration_draft.sql`: revised review draft. Adds a trusted trigger to create a matching assignment when a researcher creates a case for themselves, permits ending assignments after a target is deactivated, and aborts on unexpected policy-name drift. Still requires a fresh Supabase inventory, staging execution, and full review; not production-ready.
+- `security/review/006_security_acceptance_test_plan.md`: positive/negative test cases for all roles and lifecycle events.
+- `security/review/007_staff_portal_implementation_boundary.md`: role-screen requirements and safe order for frontend integration. No staff portal is wired yet.
+- `security/review/008_post_deployment_readonly_verification.sql`: read-only SQL checks for RLS, policies, triggers, assignment helpers, and current session role.
 
 ## Explicitly not done
 - No SQL executed against Supabase.
