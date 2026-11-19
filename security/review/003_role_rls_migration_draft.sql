@@ -216,6 +216,32 @@ REVOKE ALL ON public.case_assignments, public.orphan_assignments FROM anon;
 REVOKE ALL ON public.case_assignments, public.orphan_assignments FROM authenticated;
 GRANT SELECT, INSERT, UPDATE, DELETE ON public.case_assignments, public.orphan_assignments TO authenticated;
 
+-- Remove every pre-existing policy on the tables governed below, including policies
+-- whose exact names were not preserved in the earlier inventory. This is intentional:
+-- leaving one broad permissive policy would OR together with the new restrictions.
+-- Review the full resulting policy set before executing this migration.
+DO $drop_old_policies$
+DECLARE
+  target_table text;
+  old_policy record;
+BEGIN
+  FOREACH target_table IN ARRAY ARRAY[
+    'family_cases','case_private_details','orphan_profiles',
+    'assistance_requests','distribution_records','sponsorships',
+    'tasks','complaints','profiles','volunteers','donations',
+    'announcements','campaigns','public_aid_intake','audit_logs'
+  ] LOOP
+    FOR old_policy IN
+      SELECT policyname
+      FROM pg_policies
+      WHERE schemaname = 'public' AND tablename = target_table
+    LOOP
+      EXECUTE format('DROP POLICY %I ON public.%I', old_policy.policyname, target_table);
+    END LOOP;
+  END LOOP;
+END
+$drop_old_policies$;
+
 -- Replace broad role-only policies on operational tables. These DROP statements
 -- name only policies confirmed in the supplied policy inventory.
 DROP POLICY IF EXISTS family_cases_research_manage ON public.family_cases;
@@ -256,8 +282,16 @@ CREATE POLICY private_details_admin_all ON public.case_private_details
   FOR ALL TO authenticated
   USING ((SELECT private.current_app_role()) = 'admin')
   WITH CHECK ((SELECT private.current_app_role()) = 'admin');
-CREATE POLICY private_details_researcher_assigned ON public.case_private_details
-  FOR ALL TO authenticated
+CREATE POLICY private_details_researcher_assigned_read ON public.case_private_details
+  FOR SELECT TO authenticated
+  USING ((SELECT private.current_app_role()) = 'researcher'
+         AND private.has_case_assignment(case_id,'researcher'));
+CREATE POLICY private_details_researcher_assigned_insert ON public.case_private_details
+  FOR INSERT TO authenticated
+  WITH CHECK ((SELECT private.current_app_role()) = 'researcher'
+              AND private.has_case_assignment(case_id,'researcher'));
+CREATE POLICY private_details_researcher_assigned_update ON public.case_private_details
+  FOR UPDATE TO authenticated
   USING ((SELECT private.current_app_role()) = 'researcher'
          AND private.has_case_assignment(case_id,'researcher'))
   WITH CHECK ((SELECT private.current_app_role()) = 'researcher'
