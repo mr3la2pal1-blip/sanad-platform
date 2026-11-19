@@ -32,7 +32,7 @@
  <aside class="side"><div class="brand">✦ سند</div><nav id="nav">
   <button class="active" data-tab="overview">نظرة عامة</button>
   <button data-tab="campaigns">الحملات</button><button data-tab="cases">ملفات الأسر</button>
-  <button data-tab="aid">طلبات المساعدة</button><button data-tab="orphans">كفالة الأيتام</button>
+  <button data-tab="aid">طلبات المساعدة</button><button data-tab="publicIntake">طلبات الموقع الواردة</button><button data-tab="orphans">كفالة الأيتام</button>
   <button data-tab="volunteers">المتطوعون</button><button data-tab="announcements">الإعلانات</button>
   <button data-tab="finance">السجل المالي</button>
  </nav><p class="note">وصول مقيّد حسب دور الحساب. لا تضف أسماء الأطفال أو عناوين الأسر في الملاحظات العامة.</p></aside>
@@ -64,6 +64,7 @@
    <div class="field"><label>الحالة</label><select name="status"><option value="new">جديد</option><option value="under_review">قيد المراجعة</option><option value="approved">معتمد</option><option value="scheduled">مجدول</option><option value="delivered">تم التسليم</option><option value="closed">مغلق</option><option value="rejected">مرفوض</option></select></div>
    <div class="field wide"><label>وصف مختصر غير حساس</label><textarea name="description" rows="2" maxlength="1000"></textarea></div><div><button class="btn">حفظ الطلب</button></div>
   </form></div><div class="panel"><h2>طلبات المساعدة</h2><div id="aidTable" class="empty">جارٍ التحميل…</div></div></section>
+  <section id="publicIntake" class="section"><div class="panel"><h2>طلبات المساعدة المرسلة من الموقع</h2><p class="subtle">هذه الطلبات منفصلة عن الطلبات المرتبطة بملفات الأسر. تظهر هنا للمدير فقط وفق سياسات قاعدة البيانات.</p><div id="publicIntakeTable" class="empty">جارٍ التحميل…</div></div></section>
   <section id="orphans" class="section"><div class="panel"><h2>إضافة ملف كفالة برمز داخلي</h2><form id="orphanForm" class="formgrid">
    <div class="field"><label>ملف الأسرة المرتبط</label><select name="case_id" id="orphanCaseSelect" required><option value="">اختر رمز الحالة</option></select></div>
    <div class="field"><label>رمز ملف اليتيم</label><input name="internal_code" required maxlength="40" placeholder="ORPH-0001"></div>
@@ -85,7 +86,7 @@ const SUPABASE_URL='https://vovpbesmqgvfpjxslzbx.supabase.co';
 const SUPABASE_KEY='sb_publishable_1T4fLsk02CYnxnJOFVGhtw_Mh-t9V3j';
 const db=createClient(SUPABASE_URL,SUPABASE_KEY);
 const $=id=>document.getElementById(id);
-const labels={overview:'نظرة عامة',campaigns:'الحملات',cases:'ملفات الأسر',aid:'طلبات المساعدة',orphans:'كفالة الأيتام',volunteers:'المتطوعون',announcements:'الإعلانات',finance:'السجل المالي'};
+const labels={overview:'نظرة عامة',campaigns:'الحملات',cases:'ملفات الأسر',aid:'طلبات المساعدة',publicIntake:'طلبات الموقع الواردة',orphans:'كفالة الأيتام',volunteers:'المتطوعون',announcements:'الإعلانات',finance:'السجل المالي'};
 let currentUser=null;
 function safe(v){return String(v??'—').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function showError(message){$('authError').textContent=message;}
@@ -93,10 +94,11 @@ function renderTable(id,rows,cols){const el=$(id);if(!rows?.length){el.innerHTML
 async function loadTable(table,columns,container,order='created_at'){const {data,error}=await db.from(table).select(columns).order(order,{ascending:false}).limit(100);if(error){$(container).textContent='تعذّر تحميل البيانات: '+error.message;return [];}return data||[];}
 async function refresh(){
  $('connectionState').textContent='متصل بقاعدة البيانات. يتم تحميل السجلات وفق صلاحيات المدير.';
- const [campaigns,cases,aid,orphans,volunteers,announcements,donations]=await Promise.all([
+ const [campaigns,cases,aid,publicIntake,orphans,volunteers,announcements,donations]=await Promise.all([
   loadTable('campaigns','id,title,status,target_amount,currency,created_at','campaignTable'),
   loadTable('family_cases','id,case_code,region,household_size,status,priority,created_at','caseTable'),
   loadTable('assistance_requests','id,case_id,category,priority,status,created_at','aidTable'),
+  loadTable('public_aid_intake','id,need_type,region,contact,details,created_at','publicIntakeTable'),
   loadTable('orphan_profiles','id,internal_code,age_years,status,created_at','orphanTable'),
   loadTable('volunteers','id,full_name,phone,region,status,created_at','volunteerTable'),
   loadTable('announcements','id,title,is_published,created_at','announcementTable'),
@@ -106,6 +108,7 @@ async function refresh(){
  renderTable('campaignTable',campaigns,[['title','الحملة'],['target_amount','الهدف'],['currency','العملة'],['status','الحالة']]);
  renderTable('caseTable',cases,[['case_code','رمز الحالة'],['region','المنطقة'],['household_size','عدد الأفراد'],['priority','الأولوية'],['status','الحالة']]);
  renderTable('aidTable',aid,[['category','الاحتياج'],['priority','الأولوية'],['status','الحالة'],['created_at','تاريخ الإنشاء']]);
+ renderTable('publicIntakeTable',publicIntake,[['need_type','نوع الاحتياج'],['region','المنطقة'],['contact','وسيلة التواصل'],['details','التفاصيل'],['created_at','تاريخ الإرسال']]);
  renderTable('orphanTable',orphans,[['internal_code','رمز الملف'],['age_years','العمر'],['status','الحالة']]);
  renderTable('volunteerTable',volunteers,[['full_name','المتطوع'],['phone','التواصل'],['region','المنطقة'],['status','الحالة']]);
  renderTable('announcementTable',announcements,[['title','العنوان'],['is_published','منشور؟'],['created_at','تاريخ الإنشاء']]);
