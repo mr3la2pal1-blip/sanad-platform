@@ -126,7 +126,31 @@ async function enter(user){
  if(error||!profile||profile.role!=='admin'||!profile.is_active){await db.auth.signOut();$('authView').classList.remove('hidden');$('appView').classList.add('hidden');showError('هذا الحساب لا يملك صلاحية المدير العام أو أن الحساب غير نشط.');return;}
  currentUser=user;$('authView').classList.add('hidden');$('appView').classList.remove('hidden');$('signedUser').textContent=(profile.full_name||user.email)+' — '+user.email;await refresh();
 }
-$('loginForm').addEventListener('submit',async e=>{e.preventDefault();$('loginBtn').disabled=true;showError('جارٍ التحقق من الحساب…');const {data,error}=await db.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value});$('loginBtn').disabled=false;if(error){showError('تعذّر تسجيل الدخول. تحقق من البريد وكلمة المرور.');return;}showError('');await enter(data.user);});
+$('loginForm').addEventListener('submit',async e=>{
+ e.preventDefault();
+ const email=$('email').value.trim();
+ const password=$('password').value;
+ $('loginBtn').disabled=true;
+ showError('جارٍ التحقق من الحساب…');
+ try{
+  const {data,error}=await db.auth.signInWithPassword({email,password});
+  if(error){
+   $('email').value=email;$('password').value=password;
+   showError('لم يكتمل تسجيل الدخول. تأكد من بيانات الحساب وحاول مجددًا.');
+   return;
+  }
+  showError('');
+  await enter(data.user);
+  if(!currentUser){
+   $('email').value=email;$('password').value=password;
+  }
+ }catch(err){
+  $('email').value=email;$('password').value=password;
+  showError('حدث خطأ أثناء تسجيل الدخول. حاول مرة أخرى.');
+ }finally{
+  $('loginBtn').disabled=false;
+ }
+});
 const RESET_LIMIT=3,RESET_WINDOW=24*60*60*1000,RESET_KEY='sanad_admin_reset_attempts_v1';
 function resetAttempts(){try{const v=JSON.parse(localStorage.getItem(RESET_KEY)||'null');if(!v||Date.now()-v.startedAt>=RESET_WINDOW)return {count:0,startedAt:Date.now()};return v;}catch{return {count:0,startedAt:Date.now()};}}
 $('resetBtn').addEventListener('click',async()=>{
