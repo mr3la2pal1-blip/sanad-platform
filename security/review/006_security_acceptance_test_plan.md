@@ -58,3 +58,17 @@ Never use real beneficiary records for the test fixture.
 
 ## Release gate
 Do not deploy to production until every negative test is denied, every required positive test succeeds, and all current app screens work with the final grants. Record evidence and rollback steps in the PR.
+
+## Financial-column isolation tests (migration 009)
+
+Use the dedicated views, not simulated role claims:
+
+- Admin A: `admin_orphan_profiles_view` and `sponsorships_finance_view` return the expected admin rows.
+- Orphan supervisor O1: `orphan_supervisor_orphans_view` returns only the individually assigned orphan; the view has no financial columns.
+- O1: direct SELECT from `orphan_profiles` and `sponsorships` is denied, including attempts to name `amount`, `currency`, `frequency`, `sponsor_reference`, or `notes`.
+- Accountant C1: `sponsorships_finance_view` works; direct base-table SELECT is denied; private orphan notes are not exposed through the orphan views.
+- Researcher, distributor, volunteer, and anon: no access to either base table or the new views unless a separately reviewed role-specific view is later approved.
+- Admin dashboard: orphan list loads from `admin_orphan_profiles_view`; orphan creation still succeeds through the existing INSERT path.
+- Inspect effective ACLs (table, column, PUBLIC, and inherited grants), view ownership, and exact view definitions after migration.
+
+Migration 009 is a separate staging-only draft. It must not be run before migration 005 and must not be considered production-ready until all tests above pass.
