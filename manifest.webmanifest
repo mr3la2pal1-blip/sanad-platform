@@ -1,1 +1,20 @@
-{"name":"منصة سند الخيرية","short_name":"سند","description":"منصة للتكافل ودعم الأيتام والعائلات المحتاجة","lang":"ar","dir":"rtl","start_url":"./","scope":"./","display":"standalone","background_color":"#f8faf7","theme_color":"#0d6b55","icons":[{"src":"icons/icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any"}]}
+{
+  "name": "سند - مبادرة إنسانية مستقلة",
+  "short_name": "سند",
+  "description": "مبادرة إنسانية مستقلة تسعى لربط أهل الخير بالمبادرات المجتمعية",
+  "lang": "ar",
+  "dir": "rtl",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f8faf7",
+  "theme_color": "#0d6b55",
+  "icons": [
+    {
+      "src": "icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
