@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="t d">
+<title id="t">شعار منصة سند الخيرية</title><desc id="d">بيت يحمي عائلة وقلب وغصن زيتون بألوان أخضر وذهبي</desc>
+<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#12836a"/><stop offset="1" stop-color="#064638"/></linearGradient><linearGradient id="a"><stop stop-color="#f6d477"/><stop offset="1" stop-color="#c58b24"/></linearGradient></defs>
+<circle cx="256" cy="256" r="242" fill="#fff" stroke="url(#a)" stroke-width="14"/><circle cx="256" cy="256" r="224" fill="#f3faf5" stroke="#0d6b55" stroke-width="5"/>
+<path d="M112 215 256 91l144 124" fill="none" stroke="url(#g)" stroke-width="25" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M145 211v115q0 18 18 18h186q18 0 18-18V211" fill="#e4f1e9" stroke="#0d6b55" stroke-width="13" stroke-linejoin="round"/>
+<path d="M256 174c-23-31-70-10-59 24 8 24 59 54 59 54s51-30 59-54c11-34-36-55-59-24Z" fill="#d94a49"/>
+<circle cx="211" cy="278" r="24" fill="#e8b98b"/><circle cx="300" cy="278" r="24" fill="#e8b98b"/>
+<path d="M176 337q2-45 35-45t35 45M265 337q2-45 35-45t35 45" fill="#0d6b55"/>
+<path d="M105 366q-35-45-45-3 17 35 61 33M407 366q35-45 45-3-17 35-61 33" fill="none" stroke="#278b50" stroke-width="13" stroke-linecap="round"/>
+<path d="M91 388q44-13 72 9M421 388q-44-13-72 9" fill="none" stroke="#278b50" stroke-width="8" stroke-linecap="round"/>
+<text x="256" y="430" text-anchor="middle" font-family="Tahoma,Arial,sans-serif" font-size="66" font-weight="900" fill="#084b3d">سند</text>
+<path d="M175 449h162" stroke="#d5a53b" stroke-width="6" stroke-linecap="round"/>
+</svg>
