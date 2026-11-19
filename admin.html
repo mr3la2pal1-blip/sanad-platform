@@ -19,6 +19,14 @@
   <div id="authError" class="error" role="alert"></div>
   <p class="subtle">لا تشارك كلمة المرور مع أي شخص. يتم التحقق من دورك من قاعدة البيانات وسياسات الحماية.</p>
  </form>
+ <form id="recoveryForm" class="auth-card hidden">
+  <div class="brand">✦ تعيين كلمة مرور جديدة</div>
+  <p>أدخل كلمة مرور جديدة لحسابك، ثم سجّل الدخول بها.</p>
+  <div class="field"><label for="newPassword">كلمة المرور الجديدة</label><input id="newPassword" type="password" autocomplete="new-password" minlength="8" required></div>
+  <div class="field"><label for="confirmPassword">تأكيد كلمة المرور</label><input id="confirmPassword" type="password" autocomplete="new-password" minlength="8" required></div>
+  <button id="savePasswordBtn" class="btn" type="submit">حفظ كلمة المرور</button>
+  <div id="recoveryError" class="error" role="alert"></div>
+ </form>
 </section>
 <div id="appView" class="layout hidden">
  <aside class="side"><div class="brand">✦ سند</div><nav id="nav">
@@ -113,9 +121,38 @@ async function enter(user){
  currentUser=user;$('authView').classList.add('hidden');$('appView').classList.remove('hidden');$('signedUser').textContent=(profile.full_name||user.email)+' — '+user.email;await refresh();
 }
 $('loginForm').addEventListener('submit',async e=>{e.preventDefault();$('loginBtn').disabled=true;showError('جارٍ التحقق من الحساب…');const {data,error}=await db.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value});$('loginBtn').disabled=false;if(error){showError('تعذّر تسجيل الدخول. تحقق من البريد وكلمة المرور.');return;}showError('');await enter(data.user);});
-$('resetBtn').addEventListener('click',async()=>{const email=$('email').value.trim();if(!email){showError('اكتب بريدك الإلكتروني أولًا.');return;}const {error}=await db.auth.resetPasswordForEmail(email,{redirectTo:'https://sanad-platform-ti30.onrender.com/admin.html'});showError(error?'تعذّر إرسال رابط الاستعادة: '+error.message:'إذا كان البريد مسجلًا، ستصلك رسالة لاستعادة كلمة المرور. افتح الرسالة الجديدة للعودة إلى منصة سند.');});
+const RESET_LIMIT=3,RESET_WINDOW=24*60*60*1000,RESET_KEY='sanad_admin_reset_attempts_v1';
+function resetAttempts(){try{const v=JSON.parse(localStorage.getItem(RESET_KEY)||'null');if(!v||Date.now()-v.startedAt>=RESET_WINDOW)return {count:0,startedAt:Date.now()};return v;}catch{return {count:0,startedAt:Date.now()};}}
+$('resetBtn').addEventListener('click',async()=>{
+ const email=$('email').value.trim();
+ if(!email){showError('اكتب بريدك الإلكتروني أولًا.');return;}
+ const attempts=resetAttempts();
+ if(attempts.count>=RESET_LIMIT){const mins=Math.ceil((RESET_WINDOW-(Date.now()-attempts.startedAt))/60000);showError('استخدمت المحاولات الثلاث. حاول مجددًا بعد '+mins+' دقيقة تقريبًا.');return;}
+ $('resetBtn').disabled=true;
+ attempts.count+=1;localStorage.setItem(RESET_KEY,JSON.stringify(attempts));
+ const {error}=await db.auth.resetPasswordForEmail(email,{redirectTo:'https://sanad-platform-ti30.onrender.com/admin.html'});
+ $('resetBtn').disabled=false;
+ const left=RESET_LIMIT-attempts.count;
+ showError(error?'تعذّر إرسال رابط الاستعادة: '+(error.message==='email rate limit exceeded'?'وصلنا إلى حد إرسال الرسائل مؤقتًا؛ انتظر قبل المحاولة التالية.':error.message):'إذا كان البريد مسجلًا، ستصلك رسالة الاستعادة. تبقّت لك '+left+' من 3 محاولات خلال 24 ساعة.');
+});
 $('logoutBtn').addEventListener('click',async()=>{await db.auth.signOut();location.reload();});
-db.auth.onAuthStateChange(async(event,session)=>{if(event==='PASSWORD_RECOVERY'){const next=prompt('أدخل كلمة المرور الجديدة (8 أحرف على الأقل):');if(next&&next.length>=8){const {error}=await db.auth.updateUser({password:next});if(error)showError('تعذّر تحديث كلمة المرور: '+error.message);else{alert('تم تحديث كلمة المرور. سجّل الدخول الآن.');await db.auth.signOut();location.reload();}}else if(next!==null){showError('كلمة المرور يجب أن تكون 8 أحرف على الأقل.');}}if(session?.user&&!currentUser)enter(session.user);});
+$('recoveryForm').addEventListener('submit',async e=>{
+ e.preventDefault();const next=$('newPassword').value,confirm=$('confirmPassword').value;
+ if(next.length<8){$('recoveryError').textContent='كلمة المرور يجب أن تكون 8 أحرف على الأقل.';return;}
+ if(next!==confirm){$('recoveryError').textContent='كلمتا المرور غير متطابقتين.';return;}
+ $('savePasswordBtn').disabled=true;$('recoveryError').textContent='جارٍ تحديث كلمة المرور…';
+ const {error}=await db.auth.updateUser({password:next});$('savePasswordBtn').disabled=false;
+ if(error){$('recoveryError').textContent='تعذّر تحديث كلمة المرور: '+error.message;return;}
+ await db.auth.signOut();$('recoveryForm').classList.add('hidden');$('loginForm').classList.remove('hidden');$('password').value='';showError('تم تحديث كلمة المرور بنجاح. سجّل الدخول بكلمة المرور الجديدة.');
+});
+db.auth.onAuthStateChange((event,session)=>{
+ if(event==='PASSWORD_RECOVERY'){
+  $('authView').classList.remove('hidden');$('appView').classList.add('hidden');
+  $('loginForm').classList.add('hidden');$('recoveryForm').classList.remove('hidden');
+  return;
+ }
+ if(session?.user&&!currentUser)queueMicrotask(()=>enter(session.user));
+});
 const {data:{session}}=await db.auth.getSession();if(session?.user)await enter(session.user);
 $('nav').addEventListener('click',e=>{const b=e.target.closest('button[data-tab]');if(!b)return;document.querySelectorAll('#nav button').forEach(x=>x.classList.toggle('active',x===b));document.querySelectorAll('.section').forEach(x=>x.classList.toggle('show',x.id===b.dataset.tab));$('pageTitle').textContent=labels[b.dataset.tab];});
 function formData(form){return Object.fromEntries(new FormData(form).entries());}
