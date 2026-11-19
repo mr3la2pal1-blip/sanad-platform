@@ -167,7 +167,6 @@ db.auth.onAuthStateChange((event,session)=>{
   showRecoveryForm();
   return;
  }
- if(session?.user&&!currentUser&&!recoveryFlow)queueMicrotask(()=>{if(!recoveryFlow)enter(session.user);});
 });
 const {data:{session}}=await db.auth.getSession();
 if(session?.user&&!recoveryFlow)await enter(session.user);
