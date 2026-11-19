@@ -108,8 +108,14 @@ BEGIN
   FROM public.profiles AS p
   WHERE p.id = NEW.user_id;
 
-  IF NOT FOUND OR target_active IS DISTINCT FROM true THEN
-    RAISE EXCEPTION 'Assignment target must be an active profile.';
+  IF NOT FOUND THEN
+    RAISE EXCEPTION 'Assignment target profile does not exist.';
+  END IF;
+
+  -- Active assignments require an active target. Ending an old assignment
+  -- remains possible after the staff account has been deactivated.
+  IF NEW.is_active AND target_active IS DISTINCT FROM true THEN
+    RAISE EXCEPTION 'An active assignment requires an active target profile.';
   END IF;
 
   IF TG_TABLE_NAME = 'case_assignments'
@@ -122,7 +128,10 @@ BEGIN
     RAISE EXCEPTION 'Orphan assignment target must have orphan_supervisor role.';
   END IF;
 
-  IF NEW.assigned_by IS NOT NULL THEN
+  -- Validate the assigning admin only when the attribution is first set or changed.
+  -- Historical assignment rows can still be ended if their original assigner is inactive.
+  IF NEW.assigned_by IS NOT NULL
+     AND (TG_OP = 'INSERT' OR NEW.assigned_by IS DISTINCT FROM OLD.assigned_by) THEN
     SELECT p.is_active INTO assigner_active
     FROM public.profiles AS p WHERE p.id = NEW.assigned_by;
     IF assigner_active IS DISTINCT FROM true THEN
