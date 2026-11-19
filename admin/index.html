@@ -128,3 +128,16 @@ await insertForm('volunteerForm','volunteers',v=>({full_name:v.full_name.trim(),
 await insertForm('announcementForm','announcements',v=>({title:v.title.trim(),body:v.body,is_published:v.is_published==='true',published_at:v.is_published==='true'?new Date().toISOString():null,created_by:currentUser.id}));
 </script>
 </body></html>
+
+/* Login screen spacing and Arabic text wrapping fix */
+.auth{direction:rtl;text-align:right;align-items:center}
+.auth-card{display:flex;flex-direction:column;gap:10px;line-height:1.8;overflow-wrap:anywhere}
+.auth-card .brand{display:block;line-height:1.55;margin:0 0 2px;white-space:normal;word-break:normal}
+.auth-card p{display:block;margin:0 0 6px;line-height:1.9;white-space:normal;overflow-wrap:anywhere}
+.auth-card .field{display:grid;grid-template-columns:minmax(0,1fr);gap:7px;margin:4px 0}
+.auth-card .field label{display:block;line-height:1.7}
+.auth-card .field input{display:block;min-height:46px;line-height:1.5}
+.auth-card .btn{display:block;min-height:46px;line-height:1.5;margin:0;white-space:normal}
+.auth-card .error{display:block;line-height:1.8;overflow-wrap:anywhere}
+.auth-card .subtle{line-height:1.9;margin:0}
+@media(max-width:480px){.auth{padding:14px}.auth-card{width:100%;padding:22px 18px;gap:9px}.auth-card .brand{font-size:23px}}
