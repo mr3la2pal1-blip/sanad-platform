@@ -80,8 +80,25 @@
   <section id="finance" class="section"><div class="panel"><h2>السجل المالي</h2><p class="notice">السجلات هنا للقراءة فقط في هذه المرحلة. لا توجد بوابة دفع متصلة، ولا تعتبر أي قيمة تبرعًا مستلمًا إلا بعد تحقق مالي مستقل.</p><div id="donationTable" class="empty">جارٍ التحميل…</div></div></section>
  </main>
 </div>
+<script>
+/* Keep the login form from navigating away if the module or network fails. */
+document.getElementById('loginForm').addEventListener('submit',function(event){
+ event.preventDefault();
+ if(!window.sanadLoginReady){
+  const message=document.getElementById('authError');
+  if(message) message.textContent='جاري تجهيز تسجيل الدخول… إذا استمرت الرسالة، حدّث الصفحة بعد قليل.';
+ }
+});
+</script>
 <script type="module">
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+let createClient;
+try {
+ ({ createClient } = await import('https://esm.sh/@supabase/supabase-js@2'));
+} catch (loadError) {
+ const message=document.getElementById('authError');
+ if(message) message.textContent='تعذّر تحميل خدمة تسجيل الدخول. تحقق من الاتصال بالإنترنت ثم حدّث الصفحة.';
+ throw loadError;
+}
 const SUPABASE_URL='https://vovpbesmqgvfpjxslzbx.supabase.co';
 const SUPABASE_KEY='sb_publishable_1T4fLsk02CYnxnJOFVGhtw_Mh-t9V3j';
 const db=createClient(SUPABASE_URL,SUPABASE_KEY);
@@ -205,6 +222,7 @@ await insertForm('aidForm','assistance_requests',v=>({case_id:v.case_id,category
 await insertForm('orphanForm','orphan_profiles',v=>({case_id:v.case_id,internal_code:v.internal_code.trim(),age_years:v.age_years?Number(v.age_years):null,status:v.status}));
 await insertForm('volunteerForm','volunteers',v=>({full_name:v.full_name.trim(),phone:v.phone||null,region:v.region||null,status:v.status,skills:v.skills?v.skills.split(',').map(s=>s.trim()).filter(Boolean):[]}));
 await insertForm('announcementForm','announcements',v=>({title:v.title.trim(),body:v.body,is_published:v.is_published==='true',published_at:v.is_published==='true'?new Date().toISOString():null,created_by:currentUser.id}));
+window.sanadLoginReady=true;
 </script>
 </body></html>
 
