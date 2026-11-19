@@ -6,18 +6,19 @@ document.getElementById('volunteerInterest')?.addEventListener('submit',e=>{e.pr
 
 
 // Responsive navigation menu for tablet and mobile
-(()=> {
+(()=>{
  const header=document.querySelector('body > header');
- if(!header || header.querySelector('.mobile-menu-toggle')) return;
- const toggle=document.createElement('button');
- toggle.type='button';
- toggle.className='mobile-menu-toggle';
- toggle.setAttribute('aria-expanded','false');
- toggle.setAttribute('aria-controls','primary-navigation');
- toggle.innerHTML='<span aria-hidden="true">☰</span><span>القائمة</span>';
+ if(!header) return;
  const nav=header.querySelector('nav');
- if(nav){nav.id='primary-navigation';header.querySelector('.brand')?.after(toggle);}
- const close=()=>{header.classList.remove('is-menu-open');toggle.setAttribute('aria-expanded','false');toggle.innerHTML='<span aria-hidden="true">☰</span><span>القائمة</span>';};
+ let toggle=header.querySelector('.mobile-menu-toggle');
+ if(!nav || !toggle) return;
+ nav.id='primary-navigation';
+ toggle.setAttribute('aria-controls','primary-navigation');
+ const close=()=>{
+  header.classList.remove('is-menu-open');
+  toggle.setAttribute('aria-expanded','false');
+  toggle.innerHTML='<span aria-hidden="true">☰</span><span>القائمة</span>';
+ };
  toggle.addEventListener('click',()=>{
   const opening=!header.classList.contains('is-menu-open');
   header.classList.toggle('is-menu-open',opening);
