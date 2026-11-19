@@ -167,28 +167,49 @@ SET search_path TO ''
 SET row_security TO 'off'
 AS $function$
 DECLARE
-  creator_role text;
-  creator_active boolean;
+  actor_role text;
+  actor_active boolean;
+  target_role text;
+  target_active boolean;
 BEGIN
-  IF NEW.created_by IS DISTINCT FROM (SELECT auth.uid())
-     OR NEW.assigned_researcher IS DISTINCT FROM (SELECT auth.uid()) THEN
-    RAISE EXCEPTION 'Researchers may create only cases assigned to themselves.';
-  END IF;
-
+  -- The trigger is used for two approved paths:
+  -- (1) an active researcher creates and assigns a case to themselves;
+  -- (2) an active admin creates a case and assigns it to an active researcher.
   SELECT p.role, p.is_active
-    INTO creator_role, creator_active
+    INTO actor_role, actor_active
   FROM public.profiles p
   WHERE p.id = (SELECT auth.uid());
 
-  IF creator_role IS DISTINCT FROM 'researcher'
-     OR creator_active IS DISTINCT FROM true THEN
-    RAISE EXCEPTION 'Only an active researcher may self-create an assigned case.';
+  IF actor_active IS DISTINCT FROM true THEN
+    RAISE EXCEPTION 'An active authenticated staff profile is required.';
+  END IF;
+
+  SELECT p.role, p.is_active
+    INTO target_role, target_active
+  FROM public.profiles p
+  WHERE p.id = NEW.assigned_researcher;
+
+  IF target_role IS DISTINCT FROM 'researcher'
+     OR target_active IS DISTINCT FROM true THEN
+    RAISE EXCEPTION 'The assigned researcher must be an active researcher.';
+  END IF;
+
+  IF actor_role = 'researcher' THEN
+    IF NEW.created_by IS DISTINCT FROM (SELECT auth.uid())
+       OR NEW.assigned_researcher IS DISTINCT FROM (SELECT auth.uid()) THEN
+      RAISE EXCEPTION 'Researchers may create only cases assigned to themselves.';
+    END IF;
+  ELSIF actor_role = 'admin' THEN
+    -- Admins may assign a newly-created case to any active researcher.
+    NULL;
+  ELSE
+    RAISE EXCEPTION 'Only an active admin or researcher may create an assigned case.';
   END IF;
 
   INSERT INTO public.case_assignments
     (case_id, user_id, assignment_role, assigned_by, is_active)
   VALUES
-    (NEW.id, (SELECT auth.uid()), 'researcher', (SELECT auth.uid()), true);
+    (NEW.id, NEW.assigned_researcher, 'researcher', (SELECT auth.uid()), true);
 
   RETURN NEW;
 END
@@ -197,7 +218,7 @@ $function$;
 CREATE TRIGGER family_cases_assign_creator
 AFTER INSERT ON public.family_cases
 FOR EACH ROW
-WHEN (NEW.created_by IS NOT NULL AND NEW.assigned_researcher IS NOT NULL)
+WHEN (NEW.assigned_researcher IS NOT NULL)
 EXECUTE FUNCTION private.assign_case_creator_as_researcher();
 
 -- Narrow SECURITY DEFINER predicates. They expose only boolean membership.
