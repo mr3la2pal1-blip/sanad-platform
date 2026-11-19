@@ -39,7 +39,8 @@ The password-reset counter is stored in browser localStorage and is therefore no
 
 ## Repository changes in this branch
 - `security/review/README.md`: this review and staged work plan.
-- `security/review/001_case_assignments_foundation.sql`: guarded draft for the assignment foundation only. It is explicitly not a production-ready migration.
+- `security/review/001_case_assignments_foundation.sql`: guarded draft for the case-level assignment foundation only. It is explicitly not a production-ready migration.
+- `security/review/002_recommended_role_and_assignment_model.md`: recommended least-privilege role matrix, separate orphan-level assignment design, field boundaries, RLS migration rules, acceptance tests, and staged deployment sequence.
 
 ## Explicitly not done
 - No SQL executed against Supabase.
