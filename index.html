@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ar" dir="rtl"><head><script>
 /* Route Supabase password-recovery links to the admin recovery form. */
-(()=>{const hash=new URLSearchParams(location.hash.startsWith('#')?location.hash.slice(1):location.hash);if(hash.get('type')==='recovery'){location.replace('/admin.html'+location.search+location.hash);}})();
+(()=>{const path=location.pathname.replace(/\/+$/,'')||'/';if(path==='/admin'){location.replace('/admin.html'+location.search+location.hash);return;}const hash=new URLSearchParams(location.hash.startsWith('#')?location.hash.slice(1):location.hash);if(hash.get('type')==='recovery'){location.replace('/admin.html'+location.search+location.hash);}})();
 </script><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#0d6b55"><meta name="description" content="منصة سند لدعم الأيتام والعائلات المحتاجة"><title>سند | معًا نكون عونًا</title><link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="assets/sanad-logo.svg" type="image/svg+xml"><link rel="stylesheet" href="style.css"></head>
 <body><header><a class="brand" href="#"><img src="/assets/sanad-logo.svg" alt="شعار سند"> سند</a><button class="mobile-menu-toggle" type="button" aria-expanded="false" aria-controls="primary-navigation"><span aria-hidden="true">☰</span><span>القائمة</span></button><nav id="primary-navigation"><a href="#services">الخدمات</a><a href="#initiatives">المبادرات</a><a href="#aidRequest">طلب مساعدة</a><a href="#trust">الشفافية</a></nav><a class="outline" href="#services">خدمات المجتمع</a><a class="outline" href="#contact">ساهم معنا</a></header>
 <main>
