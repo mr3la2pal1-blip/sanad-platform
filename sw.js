@@ -1,4 +1,4 @@
-const C="sanad-cache-v8",A=["./","./index.html","./admin.html","./admin/index.html","./style.css","./app.js","./manifest.webmanifest","./icons/icon.svg"];
+const C="sanad-cache-v9",A=["./","./index.html","./admin.html","./admin/index.html","./style.css","./app.js","./manifest.webmanifest","./icons/icon.svg"];
 self.addEventListener("install",e=>{e.waitUntil(caches.open(C).then(c=>c.addAll(A)));self.skipWaiting()});
 self.addEventListener("activate",e=>e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==C).map(x=>caches.delete(x))))));
 self.addEventListener("fetch",e=>{
