@@ -106,12 +106,13 @@ async function refresh(){
  $('campaignCount').textContent=campaigns.length;$('caseCount').textContent=cases.length;$('aidCount').textContent=aid.length;$('orphanCount').textContent=orphans.length;
  renderTable('campaignTable',campaigns,[['title','الحملة'],['target_amount','الهدف'],['currency','العملة'],['status','الحالة']]);
  renderTable('caseTable',cases,[['case_code','رمز الحالة'],['region','المنطقة'],['household_size','عدد الأفراد'],['priority','الأولوية'],['status','الحالة']]);
- renderTable('aidTable',aid,[['category','الاحتياج'],['priorit const {data:adminCheck,error:adminCheckError}=await db.rpc('is_sanad_admin');
+ renderTable('aidTable',aid,[['category','الاحتياج'],['priority','الأولوية'],['status','الحالة'],['created_at','التاريخ']]);
+ const {data:adminCheck,error:adminCheckError}=await db.rpc('is_sanad_admin');
  const {count:intakeCount,error:intakeCountError}=await db.from('public_aid_intake').select('id',{count:'exact',head:true});
  const {data:publicIntake,error:publicIntakeError}=await db.from('public_aid_intake').select('id,need_type,region,contact,details,created_at').order('created_at',{ascending:false}).limit(100);
  const diag=['معرّف جلسة الدخول: '+currentUser.id,'فحص صلاحية المدير من داخل الجلسة: '+(adminCheckError?'خطأ '+adminCheckError.code+' — '+adminCheckError.message:String(adminCheck)),'عدد السجلات المرئية للجلسة: '+(intakeCountError?'خطأ '+intakeCountError.code+' — '+intakeCountError.message:String(intakeCount))];
  $('publicIntakeDiagnostic').textContent=diag.join(' | ');
- if(publicIntakeError){$('publicIntakeTable').textContent='تعذّر تحميل طلبات الموقع: '+publicIntakeError.message;}else{renderTable('publicIntakeTable',publicIntake,[['need_type','نوع الاحتياج'],['region','المنطقة'],['contact','وسيلة التواصل'],['details','التفاصيل'],['created_at','تاريخ الإرسال']]);}ة التواصل'],['details','التفاصيل'],['created_at','تاريخ الإرسال']]);}
+ if(publicIntakeError){$('publicIntakeTable').textContent='تعذّر تحميل طلبات الموقع: '+publicIntakeError.message;}else{renderTable('publicIntakeTable',publicIntake,[['need_type','نوع الاحتياج'],['region','المنطقة'],['contact','وسيلة التواصل'],['details','التفاصيل'],['created_at','تاريخ الإرسال']]);}
  renderTable('orphanTable',orphans,[['internal_code','رمز الملف'],['age_years','العمر'],['status','الحالة']]);
  renderTable('volunteerTable',volunteers,[['full_name','المتطوع'],['phone','التواصل'],['region','المنطقة'],['status','الحالة']]);
  renderTable('announcementTable',announcements,[['title','العنوان'],['is_published','منشور؟'],['created_at','تاريخ الإنشاء']]);
