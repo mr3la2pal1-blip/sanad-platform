@@ -145,15 +145,27 @@ $('recoveryForm').addEventListener('submit',async e=>{
  if(error){$('recoveryError').textContent='تعذّر تحديث كلمة المرور: '+error.message;return;}
  await db.auth.signOut();$('recoveryForm').classList.add('hidden');$('loginForm').classList.remove('hidden');$('password').value='';showError('تم تحديث كلمة المرور بنجاح. سجّل الدخول بكلمة المرور الجديدة.');
 });
+function hasRecoveryCallback(){
+ const hash=new URLSearchParams(location.hash.startsWith('#')?location.hash.slice(1):location.hash);
+ const query=new URLSearchParams(location.search);
+ return hash.get('type')==='recovery'||query.get('type')==='recovery'||query.has('code');
+}
+let recoveryFlow=hasRecoveryCallback();
+function showRecoveryForm(){
+ recoveryFlow=true;
+ $('authView').classList.remove('hidden');$('appView').classList.add('hidden');
+ $('loginForm').classList.add('hidden');$('recoveryForm').classList.remove('hidden');
+}
 db.auth.onAuthStateChange((event,session)=>{
  if(event==='PASSWORD_RECOVERY'){
-  $('authView').classList.remove('hidden');$('appView').classList.add('hidden');
-  $('loginForm').classList.add('hidden');$('recoveryForm').classList.remove('hidden');
+  showRecoveryForm();
   return;
  }
- if(session?.user&&!currentUser)queueMicrotask(()=>enter(session.user));
+ if(session?.user&&!currentUser&&!recoveryFlow)queueMicrotask(()=>{if(!recoveryFlow)enter(session.user);});
 });
-const {data:{session}}=await db.auth.getSession();if(session?.user)await enter(session.user);
+const {data:{session}}=await db.auth.getSession();
+if(session?.user&&!recoveryFlow)await enter(session.user);
+else if(recoveryFlow)showRecoveryForm();
 $('nav').addEventListener('click',e=>{const b=e.target.closest('button[data-tab]');if(!b)return;document.querySelectorAll('#nav button').forEach(x=>x.classList.toggle('active',x===b));document.querySelectorAll('.section').forEach(x=>x.classList.toggle('show',x.id===b.dataset.tab));$('pageTitle').textContent=labels[b.dataset.tab];});
 function formData(form){return Object.fromEntries(new FormData(form).entries());}
 async function insertForm(id,table,mapper){$(id).addEventListener('submit',async e=>{e.preventDefault();const btn=e.submitter;btn.disabled=true;const values=mapper(formData(e.target));const {error}=await db.from(table).insert(values);btn.disabled=false;if(error){alert('لم يتم الحفظ: '+error.message);return;}e.target.reset();await refresh();alert('تم الحفظ بنجاح في قاعدة بيانات سند.');});}
