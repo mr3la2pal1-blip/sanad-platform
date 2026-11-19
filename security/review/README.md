@@ -42,6 +42,7 @@ The password-reset counter is stored in browser localStorage and is therefore no
 - `security/review/001_case_assignments_foundation.sql`: guarded draft for the case-level assignment foundation only. It is explicitly not a production-ready migration.
 - `security/review/002_recommended_role_and_assignment_model.md`: recommended least-privilege role matrix, separate orphan-level assignment design, field boundaries, RLS migration rules, acceptance tests, and staged deployment sequence.
 - `security/review/003_role_rls_migration_draft.sql`: proposed full role/assignment RLS migration draft. It replaces existing policies on the listed tables and must be reviewed and tested in staging. It does not provide role-specific financial column isolation; that requires a separate view/API and grants design.
+- `security/review/004_pre_execution_security_review.md`: review findings and mandatory blockers before migration 003 can be safely corrected and tested.
 
 ## Explicitly not done
 - No SQL executed against Supabase.
