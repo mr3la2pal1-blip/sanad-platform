@@ -202,19 +202,21 @@ $('publicIntakeTable').addEventListener('click',async e=>{
  }else if(btn.dataset.intakeAction==='delete'){
   if(!confirm('هل أنت متأكد من حذف هذا الطلب نهائيًا؟ لا يمكن التراجع عن الحذف.'))return;
   btn.disabled=true;
-  const {error}=await db.from('public_aid_intake').delete().eq('id',id);
+  const {data:deletedRows,error}=await db.from('public_aid_intake').delete().eq('id',id).select('id');
   if(error){btn.disabled=false;alert('تعذّر حذف الطلب: '+error.message);return;}
-  await refresh();alert('تم حذف الطلب.');
+  if(!deletedRows?.length){btn.disabled=false;alert('لم يُحذف الطلب. لا تملك الجلسة صلاحية الحذف أو أن الطلب غير موجود.');return;}
+  await refresh();alert('تم حذف الطلب فعليًا.');
  }
 });
 $('publicIntakeEditForm').addEventListener('submit',async e=>{
  e.preventDefault();const form=e.currentTarget;const id=form.elements.id.value;
  const values={need_type:form.elements.need_type.value.trim(),region:form.elements.region.value.trim()||null,contact:form.elements.contact.value.trim()||null,details:form.elements.details.value.trim()||null};
  const submit=form.querySelector('button[type="submit"]');submit.disabled=true;
- const {error}=await db.from('public_aid_intake').update(values).eq('id',id);
+ const {data:updatedRows,error}=await db.from('public_aid_intake').update(values).eq('id',id).select('id');
  submit.disabled=false;
  if(error){alert('تعذّر حفظ التعديلات: '+error.message);return;}
- form.classList.add('hidden');form.reset();await refresh();alert('تم حفظ التعديلات.');
+ if(!updatedRows?.length){alert('لم تُحفظ التعديلات. لا تملك الجلسة صلاحية التعديل أو أن الطلب غير موجود.');return;}
+ form.classList.add('hidden');form.reset();await refresh();alert('تم حفظ التعديلات بنجاح.');
 });
 $('cancelPublicIntakeEdit').addEventListener('click',()=>{$('publicIntakeEditForm').classList.add('hidden');$('publicIntakeEditForm').reset();});
 $('logoutBtn').addEventListener('click',async()=>{await db.auth.signOut();location.reload();});
