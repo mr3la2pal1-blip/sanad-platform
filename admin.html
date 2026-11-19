@@ -94,11 +94,10 @@ function renderTable(id,rows,cols){const el=$(id);if(!rows?.length){el.innerHTML
 async function loadTable(table,columns,container,order='created_at'){const {data,error}=await db.from(table).select(columns).order(order,{ascending:false}).limit(100);if(error){$(container).textContent='تعذّر تحميل البيانات: '+error.message;return [];}return data||[];}
 async function refresh(){
  $('connectionState').textContent='متصل بقاعدة البيانات. يتم تحميل السجلات وفق صلاحيات المدير.';
- const [campaigns,cases,aid,publicIntake,orphans,volunteers,announcements,donations]=await Promise.all([
+ const [campaigns,cases,aid,orphans,volunteers,announcements,donations]=await Promise.all([
   loadTable('campaigns','id,title,status,target_amount,currency,created_at','campaignTable'),
   loadTable('family_cases','id,case_code,region,household_size,status,priority,created_at','caseTable'),
   loadTable('assistance_requests','id,case_id,category,priority,status,created_at','aidTable'),
-  loadTable('public_aid_intake','id,need_type,region,contact,details,created_at','publicIntakeTable'),
   loadTable('orphan_profiles','id,internal_code,age_years,status,created_at','orphanTable'),
   loadTable('volunteers','id,full_name,phone,region,status,created_at','volunteerTable'),
   loadTable('announcements','id,title,is_published,created_at','announcementTable'),
@@ -108,7 +107,8 @@ async function refresh(){
  renderTable('campaignTable',campaigns,[['title','الحملة'],['target_amount','الهدف'],['currency','العملة'],['status','الحالة']]);
  renderTable('caseTable',cases,[['case_code','رمز الحالة'],['region','المنطقة'],['household_size','عدد الأفراد'],['priority','الأولوية'],['status','الحالة']]);
  renderTable('aidTable',aid,[['category','الاحتياج'],['priority','الأولوية'],['status','الحالة'],['created_at','تاريخ الإنشاء']]);
- renderTable('publicIntakeTable',publicIntake,[['need_type','نوع الاحتياج'],['region','المنطقة'],['contact','وسيلة التواصل'],['details','التفاصيل'],['created_at','تاريخ الإرسال']]);
+ const {data:publicIntake,error:publicIntakeError}=await db.from('public_aid_intake').select('id,need_type,region,contact,details,created_at').order('created_at',{ascending:false}).limit(100);
+ if(publicIntakeError){$('publicIntakeTable').textContent='تعذّر تحميل طلبات الموقع: '+publicIntakeError.message;}else{renderTable('publicIntakeTable',publicIntake,[['need_type','نوع الاحتياج'],['region','المنطقة'],['contact','وسيلة التواصل'],['details','التفاصيل'],['created_at','تاريخ الإرسال']]);}
  renderTable('orphanTable',orphans,[['internal_code','رمز الملف'],['age_years','العمر'],['status','الحالة']]);
  renderTable('volunteerTable',volunteers,[['full_name','المتطوع'],['phone','التواصل'],['region','المنطقة'],['status','الحالة']]);
  renderTable('announcementTable',announcements,[['title','العنوان'],['is_published','منشور؟'],['created_at','تاريخ الإنشاء']]);
