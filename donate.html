@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0d6b55">
+<title>التبرع | منصة سند</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f4f8f6;color:#173c33;font-family:system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif;line-height:1.8}
+header{background:#0d6b55;color:#fff;padding:18px 5%;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+header a{color:#fff;text-decoration:none;font-weight:700}.wrap{max-width:760px;margin:34px auto;padding:0 16px}.panel{background:#fff;border-radius:18px;padding:24px;box-shadow:0 8px 28px #163e3012}
+h1{margin:0 0 8px;font-size:clamp(25px,5vw,36px)}.muted{color:#547067}.item{border:1px solid #dce9e3;border-radius:12px;padding:14px;margin:12px 0}.label{font-size:14px;color:#547067}.value{font-weight:800;font-size:18px}.address{direction:ltr;text-align:left;overflow-wrap:anywhere;font-family:ui-monospace,monospace;font-size:15px}
+button{border:0;border-radius:10px;background:#0d6b55;color:white;padding:13px 18px;font-size:16px;font-weight:700;width:100%;cursor:pointer;margin-top:10px}
+.warning{background:#fff6e7;border:1px solid #f0d7a7;border-radius:12px;padding:14px;color:#684b17;margin-top:18px}.status{min-height:28px;color:#0d6b55;font-size:14px}
+footer{text-align:center;color:#668077;padding:22px}
+</style>
+</head>
+<body>
+<header><a href="/">← العودة إلى منصة سند</a><strong>منصة سند</strong></header>
+<main class="wrap"><section class="panel">
+<p class="muted">المساهمة والدعم</p><h1>ساهم في دعم مبادرات سند</h1>
+<p>بيانات الاستقبال للتحويل بعملة USDT:</p>
+<div class="item"><div class="label">العملة</div><div class="value">USDT</div></div>
+<div class="item"><div class="label">الشبكة</div><div class="value">BNB Smart Chain (BEP20)</div></div>
+<div class="item"><div class="label">عنوان الاستقبال</div><div id="donationAddress" class="value address">0xa26928Ef3677eAFaD9c7Eb03Bf4E12D2c581e983</div>
+<button id="copyAddress" type="button">نسخ عنوان الاستقبال</button><p id="copyStatus" class="status" role="status" aria-live="polite">تأكد من الشبكة والعنوان قبل أي تحويل.</p></div>
+<p class="warning">تنبيه مهم: أرسل USDT فقط عبر شبكة BNB Smart Chain (BEP20). لا ترسل عملات أو رموزًا أخرى أو عبر شبكة مختلفة؛ فقد يؤدي ذلك إلى فقدان الأموال. تحقق من العنوان والمبلغ قبل تأكيد التحويل واحتفظ بإيصال العملية.</p>
+</section></main>
+<footer>© منصة سند</footer>
+<script>
+document.getElementById("copyAddress").addEventListener("click",async()=>{const address=document.getElementById("donationAddress").textContent.trim();const status=document.getElementById("copyStatus");try{await navigator.clipboard.writeText(address);status.textContent="تم نسخ عنوان الاستقبال. تأكد من الشبكة قبل التحويل.";}catch{status.textContent="تعذر النسخ تلقائيًا. اضغط مطولًا على العنوان لنسخه يدويًا.";}});
+</script>
+</body></html>
