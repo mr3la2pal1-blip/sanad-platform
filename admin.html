@@ -64,7 +64,7 @@
    <div class="field"><label>الحالة</label><select name="status"><option value="new">جديد</option><option value="under_review">قيد المراجعة</option><option value="approved">معتمد</option><option value="scheduled">مجدول</option><option value="delivered">تم التسليم</option><option value="closed">مغلق</option><option value="rejected">مرفوض</option></select></div>
    <div class="field wide"><label>وصف مختصر غير حساس</label><textarea name="description" rows="2" maxlength="1000"></textarea></div><div><button class="btn">حفظ الطلب</button></div>
   </form></div><div class="panel"><h2>طلبات المساعدة</h2><div id="aidTable" class="empty">جارٍ التحميل…</div></div></section>
-  <section id="publicIntake" class="section"><div class="panel"><h2>طلبات المساعدة المرسلة من الموقع</h2><p class="subtle">هذه الطلبات منفصلة عن الطلبات المرتبطة بملفات الأسر. تظهر هنا للمدير فقط وفق سياسات قاعدة البيانات.</p><div id="publicIntakeTable" class="empty">جارٍ التحميل…</div></div></section>
+  <section id="publicIntake" class="section"><div class="panel"><h2>طلبات المساعدة المرسلة من الموقع</h2><p class="subtle">هذه الطلبات منفصلة عن الطلبات المرتبطة بملفات الأسر. تظهر هنا للمدير فقط وفق سياسات قاعدة البيانات.</p><div id="publicIntakeTable" class="empty">جارٍ التحميل…</div><p id="publicIntakeDiagnostic" class="subtle" aria-live="polite"></p></div></section>
   <section id="orphans" class="section"><div class="panel"><h2>إضافة ملف كفالة برمز داخلي</h2><form id="orphanForm" class="formgrid">
    <div class="field"><label>ملف الأسرة المرتبط</label><select name="case_id" id="orphanCaseSelect" required><option value="">اختر رمز الحالة</option></select></div>
    <div class="field"><label>رمز ملف اليتيم</label><input name="internal_code" required maxlength="40" placeholder="ORPH-0001"></div>
@@ -106,9 +106,12 @@ async function refresh(){
  $('campaignCount').textContent=campaigns.length;$('caseCount').textContent=cases.length;$('aidCount').textContent=aid.length;$('orphanCount').textContent=orphans.length;
  renderTable('campaignTable',campaigns,[['title','الحملة'],['target_amount','الهدف'],['currency','العملة'],['status','الحالة']]);
  renderTable('caseTable',cases,[['case_code','رمز الحالة'],['region','المنطقة'],['household_size','عدد الأفراد'],['priority','الأولوية'],['status','الحالة']]);
- renderTable('aidTable',aid,[['category','الاحتياج'],['priority','الأولوية'],['status','الحالة'],['created_at','تاريخ الإنشاء']]);
+ renderTable('aidTable',aid,[['category','الاحتياج'],['priorit const {data:adminCheck,error:adminCheckError}=await db.rpc('is_sanad_admin');
+ const {count:intakeCount,error:intakeCountError}=await db.from('public_aid_intake').select('id',{count:'exact',head:true});
  const {data:publicIntake,error:publicIntakeError}=await db.from('public_aid_intake').select('id,need_type,region,contact,details,created_at').order('created_at',{ascending:false}).limit(100);
- if(publicIntakeError){$('publicIntakeTable').textContent='تعذّر تحميل طلبات الموقع: '+publicIntakeError.message;}else{renderTable('publicIntakeTable',publicIntake,[['need_type','نوع الاحتياج'],['region','المنطقة'],['contact','وسيلة التواصل'],['details','التفاصيل'],['created_at','تاريخ الإرسال']]);}
+ const diag=['معرّف جلسة الدخول: '+currentUser.id,'فحص صلاحية المدير من داخل الجلسة: '+(adminCheckError?'خطأ '+adminCheckError.code+' — '+adminCheckError.message:String(adminCheck)),'عدد السجلات المرئية للجلسة: '+(intakeCountError?'خطأ '+intakeCountError.code+' — '+intakeCountError.message:String(intakeCount))];
+ $('publicIntakeDiagnostic').textContent=diag.join(' | ');
+ if(publicIntakeError){$('publicIntakeTable').textContent='تعذّر تحميل طلبات الموقع: '+publicIntakeError.message;}else{renderTable('publicIntakeTable',publicIntake,[['need_type','نوع الاحتياج'],['region','المنطقة'],['contact','وسيلة التواصل'],['details','التفاصيل'],['created_at','تاريخ الإرسال']]);}ة التواصل'],['details','التفاصيل'],['created_at','تاريخ الإرسال']]);}
  renderTable('orphanTable',orphans,[['internal_code','رمز الملف'],['age_years','العمر'],['status','الحالة']]);
  renderTable('volunteerTable',volunteers,[['full_name','المتطوع'],['phone','التواصل'],['region','المنطقة'],['status','الحالة']]);
  renderTable('announcementTable',announcements,[['title','العنوان'],['is_published','منشور؟'],['created_at','تاريخ الإنشاء']]);
