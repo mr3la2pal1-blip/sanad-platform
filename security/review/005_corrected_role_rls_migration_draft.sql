@@ -270,10 +270,50 @@ REVOKE ALL ON public.case_assignments, public.orphan_assignments FROM anon;
 REVOKE ALL ON public.case_assignments, public.orphan_assignments FROM authenticated;
 GRANT SELECT, INSERT, UPDATE, DELETE ON public.case_assignments, public.orphan_assignments TO authenticated;
 
--- Remove every pre-existing policy on the tables governed below, including policies
--- whose exact names were not preserved in the earlier inventory. This is intentional:
--- leaving one broad permissive policy would OR together with the new restrictions.
--- Review the full resulting policy set before executing this migration.
+-- Fail closed if policy inventory has drifted. Only names in the reviewed
+-- snapshot are eligible for the controlled replacement block below.
+DO $policy_drift_check$
+DECLARE
+  unexpected_policy record;
+BEGIN
+  SELECT schemaname, tablename, policyname
+    INTO unexpected_policy
+  FROM pg_policies
+  WHERE schemaname = 'public'
+    AND tablename = ANY (ARRAY[
+      'family_cases','case_private_details','orphan_profiles',
+      'assistance_requests','distribution_records','sponsorships',
+      'tasks','complaints','profiles','volunteers','donations',
+      'announcements','campaigns','public_aid_intake','audit_logs'
+    ])
+    AND policyname <> ALL (ARRAY[
+      'family_cases_admin_delete','family_cases_research_manage','family_cases_research_update','family_cases_team_read',
+      'private_details_admin_delete','private_details_research_insert','private_details_research_read','private_details_research_update',
+      'orphans_admin_delete','orphans_research_read','orphans_supervisor_insert','orphans_supervisor_update',
+      'requests_admin_delete','requests_research_insert','requests_team_read','requests_team_update',
+      'distributions_admin_delete','distributions_team_insert','distributions_team_read','distributions_team_update',
+      'sponsorships_admin_delete','sponsorships_finance_insert','sponsorships_finance_read','sponsorships_finance_update',
+      'tasks_admin_delete','tasks_admin_research_insert','tasks_assignee_update','tasks_read_assigned_or_admin',
+      'complaints_admin_update','complaints_assigned_admin_read','complaints_authenticated_insert',
+      'profiles_admin_delete','profiles_admin_insert','profiles_admin_update','profiles_read_self_or_admin',
+      'volunteers_admin_delete','volunteers_admin_insert','volunteers_admin_or_self_read','volunteers_admin_update',
+      'donations_admin_delete','donations_finance_read','donations_finance_update',
+      'announcements_admin_delete','announcements_admin_insert','announcements_admin_update','announcements_public_read',
+      'campaigns_admin_delete','campaigns_public_read','campaigns_finance_insert','campaigns_finance_update',
+      'public_aid_intake_anon_insert','public_aid_intake_admin_read','public_aid_intake_admin_update','public_aid_intake_admin_delete',
+      'audit_logs_admin_read'
+    ])
+  LIMIT 1;
+
+  IF FOUND THEN
+    RAISE EXCEPTION 'Unexpected RLS policy %.%.% detected; refresh inventory and review before migration.',
+      unexpected_policy.schemaname, unexpected_policy.tablename, unexpected_policy.policyname;
+  END IF;
+END
+$policy_drift_check$;
+
+-- Remove the reviewed legacy policies atomically. The drift check above prevents
+-- silently deleting a policy that was not in the supplied inventory.
 DO $drop_old_policies$
 DECLARE
   target_table text;
