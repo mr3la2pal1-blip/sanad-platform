@@ -5,6 +5,20 @@ document.getElementById("copyDonationAddress")?.addEventListener("click",async()
 if(aidForm){aidForm.addEventListener('submit',async e=>{e.preventDefault();const notice=document.getElementById('aidNotice');const form=new FormData(aidForm);const values={p_full_name:String(form.get('full_name')||'').trim(),p_identity_number:String(form.get('identity_number')||'').trim(),p_phone:String(form.get('phone')||'').trim(),p_region:String(form.get('region')||'').trim(),p_locality:String(form.get('locality')||'').trim(),p_household_size:Number(form.get('household_size')),p_children_count:Number(form.get('children_count')),p_elderly_count:Number(form.get('elderly_count')),p_disability_count:Number(form.get('disability_count')),p_marital_status:String(form.get('marital_status')||'').trim(),p_need_type:String(form.get('need_type')||'').trim(),p_details:String(form.get('details')||'').trim(),p_consent:form.get('consent')==='on'};const submit=aidForm.querySelector('button[type="submit"]');submit.disabled=true;notice.textContent='جارٍ إرسال الطلب وحفظ البيانات الشخصية بصورة مشفرة…';try{const response=await fetch('https://vovpbesmqgvfpjxslzbx.supabase.co/rest/v1/rpc/submit_public_aid_request',{method:'POST',headers:{'apikey':'sb_publishable_1T4fLsk02CYnxnJOFVGhtw_Mh-t9V3j','Authorization':'Bearer sb_publishable_1T4fLsk02CYnxnJOFVGhtw_Mh-t9V3j','Content-Type':'application/json'},body:JSON.stringify(values)});const result=await response.json().catch(()=>({}));if(!response.ok)throw new Error(result.message||result.details||'HTTP '+response.status);const ref=Array.isArray(result)?result[0]?.reference_code:result.reference_code;notice.textContent='تم استلام طلبك بنجاح. رقم المتابعة: '+(ref||'تم التسجيل')+'. احتفظ بهذا الرقم عند التواصل مع سند.';aidForm.reset();}catch(error){console.error('Aid request submission failed:',error);notice.textContent='تعذر إرسال الطلب: '+(error.message||'خطأ اتصال')+'. يرجى المحاولة لاحقًا.';}finally{submit.disabled=false;}});}document.getElementById('volunteerInterest')?.addEventListener('submit',e=>{e.preventDefault();const notice=document.getElementById('volunteerNotice');if(notice)notice.textContent='نموذج التطوع لم يُفعّل بعد.';});})();
 
 
+
+/* Public sponsored ads: RLS exposes only paid, published ads within their active dates. */
+(async()=>{
+ const host=document.getElementById('sponsoredAdsList');if(!host)return;
+ const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ const safeUrl=value=>{try{const u=new URL(String(value||''));return ['https:','http:'].includes(u.protocol)?u.href:'';}catch{return '';}};
+ try{
+  const response=await fetch('https://vovpbesmqgvfpjxslzbx.supabase.co/rest/v1/sponsored_ads?select=id,advertiser_name,title,body,image_url,target_url,starts_at,ends_at&order=starts_at.asc',{headers:{apikey:'sb_publishable_1T4fLsk02CYnxnJOFVGhtw_Mh-t9V3j',Authorization:'Bearer sb_publishable_1T4fLsk02CYnxnJOFVGhtw_Mh-t9V3j'}});
+  const rows=await response.json();if(!response.ok)throw new Error(rows.message||'HTTP '+response.status);
+  if(!rows.length){host.innerHTML='<article><p class="empty">لا توجد إعلانات ممولة نشطة حاليًا.</p></article>';return;}
+  host.innerHTML=rows.map(ad=>{const image=safeUrl(ad.image_url),link=safeUrl(ad.target_url);return '<article class="sponsored-ad"><small>إعلان ممول</small>'+(image?'<img src="'+esc(image)+'" alt="صورة إعلان '+esc(ad.title)+'" loading="lazy" style="width:100%;max-height:220px;object-fit:cover;border-radius:12px;margin:10px 0">':'')+'<h3>'+esc(ad.title)+'</h3><p>'+esc(ad.body)+'</p><p class="subtle">المعلن: '+esc(ad.advertiser_name)+'</p><p class="subtle">ينتهي: '+esc(new Date(ad.ends_at).toLocaleDateString('ar'))+'</p>'+(link?'<a class="btn" href="'+esc(link)+'" target="_blank" rel="noopener noreferrer">زيارة الإعلان</a>':'')+'</article>';}).join('');
+ }catch(error){console.error('Sponsored ads failed:',error);host.innerHTML='<article><p class="empty">تعذّر تحميل الإعلانات الممولة حاليًا.</p></article>';}
+})();
+
 // Responsive navigation menu for tablet and mobile
 (()=>{
  const header=document.querySelector('body > header');
