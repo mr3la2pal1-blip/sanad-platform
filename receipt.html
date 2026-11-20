@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><meta name="theme-color" content="#0d6b55"><title>إيصال تبرع | سند</title><link rel="stylesheet" href="style.css"></head>
+<body>
+<main class="section" style="max-width:760px;margin:32px auto;padding:20px">
+ <article class="panel" style="background:#fff;border:1px solid #dce8e2;border-radius:16px;padding:28px">
+  <div style="text-align:center"><img src="/assets/sanad-logo.svg" alt="شعار سند" width="90"><h1>إيصال تبرع موثق</h1><p>منصة سند — مبادرة إنسانية مستقلة</p></div>
+  <div id="receiptContent" aria-live="polite"><p class="empty">جارٍ التحقق من الإيصال…</p></div>
+  <p class="warning">هذا الإيصال يثبت أن سجل التبرع المشار إليه تم تأكيده يدويًا بعد التحقق من وصول التحويل. لا يُعد إيصالًا ضريبيًا أو إثباتًا صادرًا عن جمعية مسجلة.</p>
+  <div class="hero-actions"><button class="btn" type="button" id="printReceipt" disabled>طباعة / حفظ PDF</button><a class="outline" href="/">العودة إلى سند</a></div>
+ </article>
+</main>
+<script>
+(()=>{
+ const host=document.getElementById('receiptContent'),button=document.getElementById('printReceipt');
+ const params=new URLSearchParams(location.search),ref=String(params.get('ref')||'').trim().toUpperCase();
+ const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ const money=(v,c)=>new Intl.NumberFormat('ar',{style:'currency',currency:String(c||'USD'),maximumFractionDigits:2}).format(Number(v||0));
+ if(!ref||ref.length>80){host.textContent='رقم الإيصال غير صالح.';return;}
+ fetch('https://vovpbesmqgvfpjxslzbx.supabase.co/rest/v1/rpc/get_public_donation_receipt',{method:'POST',headers:{apikey:'sb_publishable_1T4fLsk02CYnxnJOFVGhtw_Mh-t9V3j',Authorization:'Bearer sb_publishable_1T4fLsk02CYnxnJOFVGhtw_Mh-t9V3j','Content-Type':'application/json'},body:JSON.stringify({p_reference_code:ref})})
+ .then(async r=>{const d=await r.json();if(!r.ok)throw new Error('receipt unavailable');return Array.isArray(d)?d[0]:d;})
+ .then(d=>{if(!d){host.textContent='لم نعثر على إيصال مؤكد بهذا الرقم.';return;}host.innerHTML='<dl><dt>رقم الإيصال</dt><dd dir="ltr">'+esc(d.public_reference)+'</dd><dt>المبلغ</dt><dd>'+esc(money(d.amount,d.currency))+'</dd><dt>الحملة</dt><dd>'+esc(d.campaign_title)+'</dd><dt>تاريخ التأكيد</dt><dd>'+esc(new Date(d.confirmed_at).toLocaleString('ar'))+'</dd><dt>الحالة</dt><dd>تم التحقق من الاستلام</dd></dl>';button.disabled=false;})
+ .catch(()=>{host.textContent='تعذر التحقق من الإيصال الآن. يرجى المحاولة لاحقًا.';});
+ button.addEventListener('click',()=>window.print());
+})();
+</script>
+</body></html>
