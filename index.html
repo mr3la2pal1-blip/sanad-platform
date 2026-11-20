@@ -18,20 +18,20 @@
 <article><i>⌂</i><h3>الإغاثة والمأوى</h3><p>مساندة المتضررين في الاحتياجات العاجلة بالتنسيق مع الجهات المختصة.</p></article>
 <article><i>✎</i><h3>دعم التعليم</h3><p>توفير المستلزمات التعليمية والفرص التي تساعد الأطفال على مواصلة التعلم.</p></article></div></section>
 <section class="section pale" id="how"><small>خطوات واضحة</small><h2>كيف نعمل؟</h2><div class="steps"><div><b>01</b><h3>تحديد الاحتياج</h3><p>مراجعة الحالات بالتعاون مع جهات مختصة.</p></div><div><b>02</b><h3>تنظيم المبادرة</h3><p>تحديد الهدف والميزانية وخطة التنفيذ.</p></div><div><b>03</b><h3>التنفيذ والتوثيق</h3><p>تنفيذ المساعدة وتوثيق المصروفات.</p></div><div><b>04</b><h3>نشر التقرير</h3><p>تحديثات الإنجاز مع حماية بيانات المستفيدين.</p></div></div></section>
-<section class="section pale" id="aidRequest"><small>طلب مساعدة</small><h2>نموذج طلب مساعدة الأسرة</h2><p class="lead">يرجى إدخال البيانات بدقة حتى يتمكن فريق سند من مراجعة الحالة والتواصل معكم. لن تظهر بيانات الهوية والبيانات العائلية في الموقع العام.</p><form id="publicAid" class="public-form">
-<label>الاسم الكامل<input name="full_name" required maxlength="160" autocomplete="name" placeholder="الاسم كما يظهر في الهوية"></label>
-<label>رقم الهوية<input name="identity_number" required inputmode="numeric" pattern="[0-9]{6,20}" minlength="6" maxlength="20" autocomplete="off" placeholder="أرقام فقط"><small>سيتم حفظ رقم الهوية مشفرًا، ولن يطلع عليه إلا مديرو سند المخولون.</small></label>
-<label>رقم الهاتف<input name="phone" type="tel" required maxlength="40" autocomplete="tel" placeholder="رقم يمكن التواصل معكم من خلاله"></label>
+<section class="section pale" id="aidRequest"><small>طلب مساعدة</small><h2>نموذج طلب مساعدة الأسرة</h2><p class="lead">يرجى إدخال البيانات بدقة حتى يتمكن فريق سند من مراجعة الحالة والتواصل معكم. لن تظهر البيانات الشخصية في الموقع العام.</p><form id="publicAid" class="public-form">
+<label>الاسم الكامل<input name="full_name" required maxlength="160" autocomplete="name"></label>
+<label>رقم الهوية<input name="identity_number" required inputmode="numeric" pattern="[0-9]{6,20}" minlength="6" maxlength="20" autocomplete="off"><small>يُحفظ رقم الهوية مشفرًا، ويقتصر الاطلاع عليه على المديرين المخولين.</small></label>
+<label>رقم الهاتف<input name="phone" type="tel" required maxlength="40" autocomplete="tel"></label>
 <label>المحافظة / المنطقة العامة<input name="region" required maxlength="160" placeholder="مثال: نابلس أو شمال غزة"></label>
 <label>الحي أو البلدة (اختياري)<input name="locality" maxlength="160" placeholder="لا تكتب عنوان المنزل التفصيلي"></label>
-<label>عدد أفراد الأسرة<input name="household_size" type="number" required min="1" max="40" step="1"></label>
-<label>عدد الأطفال<input name="children_count" type="number" required min="0" max="40" value="0" step="1"></label>
-<label>عدد كبار السن<input name="elderly_count" type="number" required min="0" max="40" value="0" step="1"></label>
-<label>عدد أفراد الأسرة من ذوي الإعاقة<input name="disability_count" type="number" required min="0" max="40" value="0" step="1"></label>
+<label>عدد أفراد الأسرة<input name="household_size" type="number" required min="1" max="40"></label>
+<label>عدد الأطفال<input name="children_count" type="number" required min="0" max="40" value="0"></label>
+<label>عدد كبار السن<input name="elderly_count" type="number" required min="0" max="40" value="0"></label>
+<label>عدد أفراد الأسرة من ذوي الإعاقة<input name="disability_count" type="number" required min="0" max="40" value="0"></label>
 <label>الحالة الاجتماعية<select name="marital_status" required><option value="">اختر الحالة</option><option>أعزب/عزباء</option><option>متزوج/ة</option><option>أرمل/ة</option><option>مطلق/ة</option><option>أخرى</option></select></label>
 <label>نوع المساعدة المطلوبة<select name="need_type" required><option value="">اختر نوع الاحتياج</option><option>غذاء</option><option>ماء</option><option>كسوة</option><option>مأوى</option><option>تعليم</option><option>دواء أو رعاية صحية</option><option>مساعدة مالية</option><option>كفالة يتيم</option><option>أخرى</option></select></label>
-<label>شرح الحالة والاحتياج<textarea name="details" rows="4" maxlength="3000" placeholder="اكتب وصفًا مختصرًا للحالة دون إضافة معلومات غير ضرورية عن أفراد الأسرة"></textarea></label>
-<label class="consent-row"><input name="consent" type="checkbox" required> أوافق على استخدام هذه البيانات من قبل فريق سند حصريًا لمراجعة طلب المساعدة والتواصل بشأنه، وأفهم أن البيانات الشخصية ستُحفظ بشكل مشفر ويقتصر الاطلاع عليها على المخولين.</label>
+<label>شرح الحالة والاحتياج<textarea name="details" rows="4" maxlength="3000"></textarea></label>
+<label class="consent-row"><input name="consent" type="checkbox" required> أوافق على استخدام البيانات من قبل فريق سند لمراجعة طلب المساعدة والتواصل بشأنه، وأفهم أن البيانات الشخصية ستُحفظ بشكل مشفر ويقتصر الاطلاع عليها على المخولين.</label>
 <button class="btn" type="submit">إرسال طلب المساعدة</button><p id="aidNotice" role="status">أكمل البيانات المطلوبة ثم أرسل الطلب.</p></form></section>
 <section class="section" id="orphanInfo"><small>كفالة الأيتام</small><h2>رعاية تحفظ الكرامة والخصوصية</h2><p class="lead">يُدار برنامج الكفالة عبر ملفات داخلية مرمّزة، والتحقق من الحالات، ومتابعة دورية. لا ننشر أسماء الأطفال أو صورهم أو مواقعهم.</p><div class="steps"><div><b>01</b><h3>استقبال الحالة</h3><p>عبر باحثين مخولين.</p></div><div><b>02</b><h3>التحقق</h3><p>مراجعة الوثائق بسرية.</p></div><div><b>03</b><h3>مطابقة الكفالة</h3><p>وفق الاحتياج والأولوية.</p></div><div><b>04</b><h3>المتابعة</h3><p>تقارير آمنة دون كشف الهوية.</p></div></div></section>
 <section class="section pale" id="coverage"><small>نطاق العمل</small><h2>مناطق التغطية</h2><p class="lead">تُحدّث هذه القائمة حسب قدرة الفرق والشركاء. لا نعرض مواقع العائلات أو نقاط توزيع حساسة.</p><div class="cards"><article><h3>شمال قطاع غزة</h3><p>تغطية حسب توفر الفرق والاحتياجات.</p></article><article><h3>مدينة غزة</h3><p>تغطية حسب التنسيق والتحقق.</p></article><article><h3>الوسطى والجنوب</h3><p>تغطية بالتعاون مع الجهات المحلية.</p></article></div></section>
