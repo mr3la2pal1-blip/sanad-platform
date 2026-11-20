@@ -1,4 +1,4 @@
-const C="sanad-cache-v31",A=["./","./index.html","./admin.html","./donate.html","./admin/index.html","./style.css","./app.js","./i18n.js?v=28","./manifest.webmanifest","./manifest-admin.webmanifest","./icons/icon.svg","./icons/admin-app.svg"];
+const C="sanad-cache-v32",A=["./","./index.html","./admin.html","./donate.html","./admin/index.html","./style.css","./app.js","./i18n.js?v=28","./manifest.webmanifest","./manifest-admin.webmanifest","./icons/icon.svg","./icons/admin-app.svg"];
 self.addEventListener("install",e=>{e.waitUntil(caches.open(C).then(c=>c.addAll(A)));self.skipWaiting()});
 self.addEventListener("activate",e=>e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==C).map(x=>caches.delete(x))))));
 
@@ -18,16 +18,28 @@ self.addEventListener("push",event=>{
 self.addEventListener("notificationclick",event=>{
  event.notification.close();
  event.waitUntil((async()=>{
-  let target=new URL(event.notification.data?.url||"/admin",self.location.origin);
-  if(target.origin!==self.location.origin)target=new URL("/admin",self.location.origin);
+  let target;
+  try{
+   target=new URL(event.notification.data?.url||"/admin",self.location.origin);
+   if(target.origin!==self.location.origin)target=new URL("/admin",self.location.origin);
+  }catch{target=new URL("/admin",self.location.origin);}
   const windows=await self.clients.matchAll({type:"window",includeUncontrolled:true});
   for(const client of windows){
    if(client.url.startsWith(self.location.origin)){
-    await client.navigate(target.href);
-    return client.focus();
+    try{
+     await client.navigate(target.href);
+     return await client.focus();
+    }catch(error){
+     // If an existing window cannot be navigated, open the target explicitly below.
+    }
    }
   }
-  return self.clients.openWindow(target.href);
+  try{
+   const opened=await self.clients.openWindow(target.href);
+   if(opened)return await opened.focus();
+  }catch(error){
+   // Keep the click handler alive even if Android declines to open a new window.
+  }
  })());
 });
 self.addEventListener("fetch",e=>{
