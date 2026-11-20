@@ -201,13 +201,23 @@
       apply(document.body);
       document.title=translate(document.title);
     };
-    controls.forEach(b=>b.addEventListener('click',()=>{
-      lang=lang==='ar'?'en':'ar';
-      try{localStorage.setItem(KEY,lang);}catch{}
-      location.reload();
-    }));
+    // Use capture-phase delegation so the language control works even if the
+    // page is re-rendered or another script attaches handlers to the same button.
+    document.addEventListener('click',event=>{
+      const button=event.target.closest?.('#lang,#languageToggle');
+      if(!button)return;
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      let current=lang;
+      try{const saved=localStorage.getItem(KEY);if(saved==='ar'||saved==='en')current=saved;}catch{}
+      const next=current==='ar'?'en':'ar';
+      try{localStorage.setItem(KEY,next);}catch{}
+      const target=new URL(location.href);
+      target.searchParams.set('lang',next);
+      location.assign(target.href);
+    },true);
     render();
-    const observer=new MutationObserver(records=>{for(const rec of records){if(rec.type==='childList')rec.addedNodes.forEach(n=>{if(n.nodeType===1)apply(n);else if(n.nodeType===3)n.nodeValue=translate(n.nodeValue);});else if(rec.type==='characterData')rec.target.nodeValue=translate(rec.target.nodeValue);}});
+    const observer=new MutationObserver(records=>{for(const rec of records){if(rec.type==='childList')rec.addedNodes.forEach(n=>{if(n.nodeType===1)apply(n);else if(n.nodeType===3){const next=translate(n.nodeValue);if(next!==n.nodeValue)n.nodeValue=next;}});else if(rec.type==='characterData'){const next=translate(rec.target.nodeValue);if(next!==rec.target.nodeValue)rec.target.nodeValue=next;}}});
     observer.observe(document.body,{subtree:true,childList:true,characterData:true});
     if(button) button.textContent=lang==='ar'?'English':'العربية';
   };
