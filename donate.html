@@ -16,7 +16,7 @@ footer{text-align:center;color:#668077;padding:22px}
 </style>
 </head>
 <body>
-<header><a href="/">← العودة إلى منصة سند</a><strong>منصة سند</strong></header>
+<header><a href="/">← العودة إلى منصة سند</a><strong>منصة سند</strong><button id="languageToggle" type="button" style="width:auto;margin:0">English</button></header>
 <main class="wrap"><section class="panel">
 <p class="muted">المساهمة والدعم</p><h1>ساهم في دعم مبادرات سند</h1>
 <p>بيانات الاستقبال للتحويل بعملة USDT:</p>
@@ -30,4 +30,4 @@ footer{text-align:center;color:#668077;padding:22px}
 <script>
 document.getElementById("copyAddress").addEventListener("click",async()=>{const address=document.getElementById("donationAddress").textContent.trim();const status=document.getElementById("copyStatus");try{await navigator.clipboard.writeText(address);status.textContent="تم نسخ عنوان الاستقبال. تأكد من الشبكة قبل التحويل.";}catch{status.textContent="تعذر النسخ تلقائيًا. اضغط مطولًا على العنوان لنسخه يدويًا.";}});
 </script>
-</body></html>
+<script src="i18n.js"></script></body></html>
