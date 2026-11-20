@@ -1,11 +1,11 @@
-const C="sanad-cache-v28",A=["./","./index.html","./admin.html","./donate.html","./admin/index.html","./style.css","./app.js","./i18n.js?v=28","./manifest.webmanifest","./icons/icon.svg"];
+const C="sanad-cache-v29",A=["./","./index.html","./admin.html","./donate.html","./admin/index.html","./style.css","./app.js","./i18n.js?v=28","./manifest.webmanifest","./icons/icon.svg"];
 self.addEventListener("install",e=>{e.waitUntil(caches.open(C).then(c=>c.addAll(A)));self.skipWaiting()});
 self.addEventListener("activate",e=>e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==C).map(x=>caches.delete(x))))));
 self.addEventListener("fetch",e=>{
  if(e.request.method!=="GET")return;
  const u=new URL(e.request.url);
  if(u.origin===self.location.origin && (u.pathname==="/admin"||u.pathname==="/admin/")){
-  e.respondWith(Response.redirect(new URL("/admin.html"+u.search+u.hash,self.location.origin),302));
+  e.respondWith(fetch(new Request(new URL("/admin.html"+u.search+u.hash,self.location.origin),{method:"GET",credentials:"same-origin",cache:"no-store"})));
   return;
  }
  if(e.request.mode==="navigate"){
