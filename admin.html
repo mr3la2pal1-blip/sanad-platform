@@ -124,7 +124,7 @@ async function refresh(){
   loadTable('orphan_profiles','id,internal_code,age_years,status,created_at','orphanTable'),
   loadTable('volunteers','id,full_name,phone,region,status,created_at','volunteerTable'),
   loadTable('announcements','id,title,is_published,created_at','announcementTable'),
-  loadTable('donations','id,amount,currency,payment_status,created_at','donationTable')
+  loadTable('donations','id,public_reference,amount,currency,payment_status,network,transaction_hash,verified_at,created_at','donationTable')
  ]);
  $('campaignCount').textContent=campaigns.length;$('caseCount').textContent=cases.length;$('aidCount').textContent=aid.length;$('orphanCount').textContent=orphans.length;
  renderTable('campaignTable',campaigns,[['title','الحملة'],['target_amount','الهدف'],['currency','العملة'],['status','الحالة']]);
@@ -139,7 +139,7 @@ async function refresh(){
  renderTable('orphanTable',orphans,[['internal_code','رمز الملف'],['age_years','العمر'],['status','الحالة']]);
  renderTable('volunteerTable',volunteers,[['full_name','المتطوع'],['phone','التواصل'],['region','المنطقة'],['status','الحالة']]);
  renderTable('announcementTable',announcements,[['title','العنوان'],['is_published','منشور؟'],['created_at','تاريخ الإنشاء']]);
- renderTable('donationTable',donations,[['amount','القيمة'],['currency','العملة'],['payment_status','حالة الدفع'],['created_at','التاريخ']]);
+ renderTable('donationTable',donations,[['public_reference','الرقم المرجعي'],['amount','القيمة'],['currency','العملة'],['payment_status','حالة الدفع'],['network','الشبكة'],['transaction_hash','معرّف المعاملة'],['verified_at','تاريخ التحقق'],['created_at','تاريخ التسجيل']]);
  renderTable('recentCampaigns',campaigns.slice(0,5),[['title','الحملة'],['status','الحالة'],['target_amount','الهدف']]);
  const options=cases.map(c=>'<option value="'+safe(c.id)+'">'+safe(c.case_code)+' — '+safe(c.region||'')+'</option>').join('');
  $('caseSelect').innerHTML='<option value="">اختر رمز الحالة</option>'+options;
