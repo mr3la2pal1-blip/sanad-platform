@@ -361,7 +361,7 @@ $('notificationTable').addEventListener('click',async e=>{const btn=e.target.clo
 $('teamTable').addEventListener('click',async e=>{const btn=e.target.closest('button[data-team-save]');if(!btn)return;const id=btn.dataset.teamSave;const select=document.querySelector('[data-team-role="'+CSS.escape(id)+'"]');if(!select)return;const activeSelect=document.querySelector('[data-team-active="'+CSS.escape(id)+'"]');if(id===currentUser.id&&(select.value!=='admin'||activeSelect?.value!=='true')){alert('لا يمكنك خفض صلاحيات حساب المدير الذي تستخدمه أو إيقافه.');return;}if(!confirm('هل تريد حفظ الدور وحالة الحساب؟'))return;btn.disabled=true;const {data,error}=await db.from('profiles').update({role:select.value,is_active:activeSelect?.value==='true'}).eq('id',id).select('id');btn.disabled=false;if(error||!data?.length){alert('تعذر تحديث الدور: '+(error?.message||'لا توجد صلاحية.'));return;}await refresh();alert('تم تحديث دور الحساب.');});
 window.sanadLoginReady=true;
 </script>
-<script src="i18n.js?v=28"></script></body></html>
+<script src="i18n.js?v=29"></script></body></html>
 
 /* Login screen spacing and Arabic text wrapping fix */
 .auth{direction:rtl;text-align:right;align-items:center}
