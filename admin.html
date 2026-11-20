@@ -37,7 +37,7 @@
   <button data-tab="finance">السجل المالي</button><button data-tab="notifications">التنبيهات</button><button data-tab="team">الصلاحيات</button>
  </nav><p class="note">وصول مقيّد حسب دور الحساب. لا تضف أسماء الأطفال أو عناوين الأسر في الملاحظات العامة.</p></aside>
  <main class="main">
-  <div class="top"><div><h1 id="pageTitle">نظرة عامة</h1><div id="signedUser" class="muted"></div></div><div class="top-actions"><span class="pill">مدير عام</span><button id="logoutBtn" class="btn secondary">تسجيل الخروج</button></div></div>
+  <div class="top"><div><h1 id="pageTitle">نظرة عامة</h1><div id="signedUser" class="muted"></div></div><div class="top-actions"><span class="pill">مدير عام</span><button id="languageToggle" class="btn secondary" type="button">English</button><button id="logoutBtn" class="btn secondary">تسجيل الخروج</button></div></div>
   <div class="notice">قاعدة البيانات متصلة. لا تُدخل بيانات مستفيدين حقيقية إلا بعد اعتماد إجراءات الخصوصية والنسخ الاحتياطي والتشغيل المؤسسي. لا توجد بوابة دفع مفعّلة.</div>
   <section id="overview" class="section show"><div class="stats">
    <div class="card stat"><small>الحملات</small><strong id="campaignCount">—</strong></div>
@@ -361,7 +361,7 @@ $('notificationTable').addEventListener('click',async e=>{const btn=e.target.clo
 $('teamTable').addEventListener('click',async e=>{const btn=e.target.closest('button[data-team-save]');if(!btn)return;const id=btn.dataset.teamSave;const select=document.querySelector('[data-team-role="'+CSS.escape(id)+'"]');if(!select)return;const activeSelect=document.querySelector('[data-team-active="'+CSS.escape(id)+'"]');if(id===currentUser.id&&(select.value!=='admin'||activeSelect?.value!=='true')){alert('لا يمكنك خفض صلاحيات حساب المدير الذي تستخدمه أو إيقافه.');return;}if(!confirm('هل تريد حفظ الدور وحالة الحساب؟'))return;btn.disabled=true;const {data,error}=await db.from('profiles').update({role:select.value,is_active:activeSelect?.value==='true'}).eq('id',id).select('id');btn.disabled=false;if(error||!data?.length){alert('تعذر تحديث الدور: '+(error?.message||'لا توجد صلاحية.'));return;}await refresh();alert('تم تحديث دور الحساب.');});
 window.sanadLoginReady=true;
 </script>
-</body></html>
+<script src="i18n.js"></script></body></html>
 
 /* Login screen spacing and Arabic text wrapping fix */
 .auth{direction:rtl;text-align:right;align-items:center}
