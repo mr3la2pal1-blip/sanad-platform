@@ -60,7 +60,8 @@
     'تعذّر تحميل طلبات الموقع: ':'Could not load website requests: ',
     'تم نسخ عنوان الاستقبال. تأكد من الشبكة قبل التحويل.':'Receiving address copied. Verify the network before transferring.',
     'تعذر النسخ تلقائيًا. اضغط مطولًا على العنوان لنسخه يدويًا.':'Could not copy automatically. Press and hold the address to copy it manually.'
-\n  });
+
+  });
   const pairs = Object.entries(dict).sort((a,b)=>b[0].length-a[0].length);
   let lang = 'ar';
   const getLang = () => {
