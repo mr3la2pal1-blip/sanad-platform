@@ -29,3 +29,24 @@ if(aidForm){aidForm.addEventListener('submit',async e=>{e.preventDefault();const
  document.addEventListener('keydown',event=>{if(event.key==='Escape')close();});
  window.addEventListener('resize',()=>{if(window.innerWidth>820)close();});
 })();
+
+
+/* Public donation ledger: only rows returned by the confirmed-only database function are rendered. */
+(async()=>{
+ const summary=document.getElementById('donationPublicSummary');
+ const list=document.getElementById('donationPublicList');
+ if(!summary||!list)return;
+ const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ const money=(amount,currency)=>new Intl.NumberFormat('ar',{style:'currency',currency:String(currency||'USD').trim(),maximumFractionDigits:2}).format(Number(amount||0));
+ try{
+  const response=await fetch('https://vovpbesmqgvfpjxslzbx.supabase.co/rest/v1/rpc/list_public_confirmed_donations',{method:'POST',headers:{'apikey':'sb_publishable_1T4fLsk02CYnxnJOFVGhtw_Mh-t9V3j','Authorization':'Bearer sb_publishable_1T4fLsk02CYnxnJOFVGhtw_Mh-t9V3j','Content-Type':'application/json'},body:'{}'});
+  const rows=await response.json();
+  if(!response.ok)throw new Error(rows.message||'HTTP '+response.status);
+  const totals={};
+  rows.forEach(row=>{const currency=String(row.currency||'USD').trim();totals[currency]=(totals[currency]||0)+Number(row.amount||0);});
+  const currencies=Object.entries(totals);
+  summary.innerHTML=currencies.length?currencies.map(([currency,total])=>'<article><h4>إجمالي التبرعات المؤكدة ('+esc(currency)+')</h4><strong>'+esc(money(total,currency))+'</strong><p class="subtle">'+rows.length+' عملية مؤكدة ضمن السجل المعروض</p></article>').join(''):'<article><h4>إجمالي التبرعات المؤكدة</h4><strong>0</strong><p class="subtle">لا توجد تبرعات مؤكدة منشورة حتى الآن.</p></article>';
+  if(!rows.length){list.innerHTML='<p class="empty">لا توجد عمليات تبرع مؤكدة للعرض حاليًا. ستظهر هنا بعد مطابقة التحويلات وتأكيد وصولها.</p>';return;}
+  list.innerHTML='<table><thead><tr><th>الرقم المرجعي</th><th>الحملة</th><th>المبلغ</th><th>تاريخ التأكيد</th><th>الحالة</th></tr></thead><tbody>'+rows.map(row=>'<tr><td dir="ltr">'+esc(row.public_reference)+'</td><td>'+esc(row.campaign_title)+'</td><td>'+esc(money(row.amount,row.currency))+'</td><td>'+esc(row.confirmed_at?new Date(row.confirmed_at).toLocaleString('ar'): '—')+'</td><td>مؤكد بعد التحقق</td></tr>').join('')+'</tbody></table>';
+ }catch(error){console.error('Public donation ledger failed:',error);summary.innerHTML='<article>تعذر تحميل إجمالي التبرعات حاليًا.</article>';list.innerHTML='<p class="subtle">تعذر تحميل سجل التبرعات. يرجى المحاولة لاحقًا.</p>';}
+})();
