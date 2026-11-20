@@ -254,7 +254,7 @@ $('resetBtn').addEventListener('click',async()=>{
  if(attempts.count>=RESET_LIMIT){const mins=Math.ceil((RESET_WINDOW-(Date.now()-attempts.startedAt))/60000);showError('استخدمت المحاولات الثلاث. حاول مجددًا بعد '+mins+' دقيقة تقريبًا.');return;}
  $('resetBtn').disabled=true;
  attempts.count+=1;localStorage.setItem(RESET_KEY,JSON.stringify(attempts));
- const {error}=await db.auth.resetPasswordForEmail(email,{redirectTo:'https://sanad-platform-ti30.onrender.com/admin.html'});
+ const {error}=await db.auth.resetPasswordForEmail(email,{redirectTo:'https://sanad-platform-ti30.onrender.com/admin'});
  $('resetBtn').disabled=false;
  const left=RESET_LIMIT-attempts.count;
  showError(error?'تعذّر إرسال رابط الاستعادة: '+(error.message==='email rate limit exceeded'?'وصلنا إلى حد إرسال الرسائل مؤقتًا؛ انتظر قبل المحاولة التالية.':error.message):'إذا كان البريد مسجلًا، ستصلك رسالة الاستعادة. تبقّت لك '+left+' من 3 محاولات خلال 24 ساعة.');
