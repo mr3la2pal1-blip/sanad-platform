@@ -60,6 +60,7 @@
     'تعذّر تحميل طلبات الموقع: ':'Could not load website requests: ',
     'تم نسخ عنوان الاستقبال. تأكد من الشبكة قبل التحويل.':'Receiving address copied. Verify the network before transferring.',
     'تعذر النسخ تلقائيًا. اضغط مطولًا على العنوان لنسخه يدويًا.':'Could not copy automatically. Press and hold the address to copy it manually.'
+  });
 
   Object.assign(dict, {
     "ملفات الأيتام":"Orphan records",
