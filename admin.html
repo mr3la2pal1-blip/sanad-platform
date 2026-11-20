@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#0d6b55"><meta name="application-name" content="إدارة سند"><link rel="manifest" href="/manifest-admin.webmanifest"><link rel="icon" type="image/png" sizes="192x192" href="/icons/admin-app.svg"><link rel="apple-touch-icon" href="/icons/admin-app.svg"><title>إدارة سند</title><script>if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("/sw.js?v=30",{scope:"/"}).catch(e=>console.warn("Admin app service worker:",e)));}</script>
+<meta name="theme-color" content="#0d6b55"><meta name="application-name" content="إدارة سند"><link rel="manifest" href="/manifest-admin.webmanifest"><link rel="icon" type="image/png" sizes="192x192" href="/icons/admin-app.svg"><link rel="apple-touch-icon" href="/icons/admin-app.svg"><title>إدارة سند</title><script>if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("/sw.js?v=31",{scope:"/"}).catch(e=>console.warn("Admin app service worker:",e)));}</script>
 <style>
 :root{--g:#0d6b55;--d:#103f34;--mint:#e9f4ef;--ink:#17352d;--muted:#71817b;--line:#e2eae6;--bg:#f5f8f6;--red:#a13b32}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Tahoma,Arial,sans-serif;line-height:1.7}button,input,select,textarea{font:inherit}button{cursor:pointer}.hidden{display:none!important}.auth{min-height:100vh;display:grid;place-items:center;padding:20px}.auth-card{background:white;border:1px solid var(--line);border-radius:18px;padding:28px;width:min(100%,440px);box-shadow:0 15px 45px #103f3410}.brand{font-size:26px;font-weight:bold;color:var(--d);margin-bottom:8px}.auth-card p,.muted{color:var(--muted);font-size:13px}.field{display:grid;gap:6px;margin:13px 0}.field label{font-size:13px;font-weight:bold}.field input,.field select,.field textarea{width:100%;border:1px solid var(--line);border-radius:9px;padding:11px;background:white;color:var(--ink);min-width:0}.btn{border:0;border-radius:9px;padding:10px 15px;background:var(--g);color:white}.btn.secondary{background:var(--mint);color:var(--g)}.btn:disabled{opacity:.6;cursor:wait}.auth .btn{width:100%;margin-top:8px}.error{color:var(--red);font-size:13px;min-height:22px}.layout{display:grid;grid-template-columns:245px 1fr;min-height:100vh}.side{background:var(--d);color:white;padding:22px 15px}.side .brand{color:white;margin:0 8px 20px}.side nav{display:grid;gap:6px}.side nav button{background:transparent;color:#e0eee8;border:0;text-align:right;padding:11px;border-radius:9px}.side nav button.active,.side nav button:hover{background:#23604f}.side .note{font-size:12px;color:#c5d9d0;margin:24px 8px;line-height:1.8}.main{padding:25px;max-width:1450px;width:100%;margin:auto}.top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:20px}.top h1{margin:0;font-size:25px}.top-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.pill{background:var(--mint);color:var(--g);padding:6px 11px;border-radius:20px;font-size:12px}.notice{background:#fff8e9;border:1px solid #f2e4c5;color:#765b25;padding:12px;border-radius:10px;font-size:13px;margin-bottom:16px}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}.card,.panel{background:white;border:1px solid var(--line);border-radius:14px;padding:17px}.stat small{color:var(--muted)}.stat strong{display:block;font-size:27px;margin-top:8px}.panel{margin-bottom:16px}.panel h2{font-size:17px;margin:0 0 13px}.section{display:none}.section.show{display:block}.formgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.formgrid .field{margin:0}.wide{grid-column:1/-1}.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:550px}th,td{text-align:right;padding:11px 9px;border-bottom:1px solid var(--line);font-size:13px}th{color:var(--muted);font-weight:normal}.empty{text-align:center;color:var(--muted);padding:22px}.actions{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.subtle{font-size:12px;color:var(--muted)}.table-actions{display:flex;gap:6px;flex-wrap:wrap}.btn.danger{background:#a13b32;color:#fff}.edit-panel{margin-top:14px}@media(max-width:850px){.layout{grid-template-columns:1fr}.side{padding:12px}.side .brand{margin:0 7px 10px}.side nav{display:flex;overflow:auto}.side nav button{white-space:nowrap}.side .note{display:none}.main{padding:15px}.stats{grid-template-columns:repeat(2,1fr)}}@media(max-width:520px){.top{align-items:flex-start;flex-direction:column}.formgrid{grid-template-columns:1fr}.wide{grid-column:auto}}
 </style>
@@ -85,7 +85,7 @@
    <div class="field"><label>بداية الإعلان</label><input name="starts_at" type="datetime-local"></div><div class="field"><label>نهاية الإعلان</label><input name="ends_at" type="datetime-local" required></div>
    <div class="field"><label>حالة الإعلان</label><select name="status"><option value="draft">مسودة — غير منشور</option><option value="published">جاهز للنشر بعد تأكيد الدفع</option></select></div><div><button class="btn" type="submit">حفظ الإعلان</button></div>
   </form></div><div class="panel"><h2>إدارة الإعلانات الممولة</h2><div id="sponsoredAdTable" class="empty">جارٍ التحميل…</div></div></section>
-<section id="notifications" class="section"><div class="panel"><h2>التنبيهات الداخلية</h2><p class="subtle">تنبيهات تلقائية لطلبات المساعدة الجديدة والتبرعات المؤكدة والإعلانات المنشورة، وتظهر للمستخدمين المخولين فقط.</p><div id="notificationTable" class="empty">جارٍ التحميل…</div></div></section>
+<section id="notifications" class="section"><div class="panel"><h2>التنبيهات الداخلية</h2><p class="subtle">تنبيهات داخلية، مع إمكانية استقبال إشعارات الهاتف حتى عند إغلاق لوحة الإدارة.</p><div id="pushControls" class="actions" hidden><button id="enablePushBtn" class="btn" type="button">تفعيل إشعارات الهاتف</button><button id="disablePushBtn" class="btn secondary" type="button" hidden>إيقاف إشعارات هذا الجهاز</button><span id="pushStatus" class="subtle" role="status" aria-live="polite"></span></div><div id="notificationTable" class="empty">جارٍ التحميل…</div></div></section>
   <section id="team" class="section"><div class="panel"><h2>إدارة أدوار الفريق</h2><p class="subtle">يمكن للمدير العام تعديل أدوار الحسابات الموجودة فقط. إنشاء حساب دخول جديد يتم من نظام المصادقة، وليس من هذه الشاشة.</p><div id="teamTable" class="empty">جارٍ التحميل…</div></div></section>
   <section id="distributions" class="section"><div class="panel"><h2>تسجيل عملية توزيع</h2><p class="subtle">سجل ما تم توزيعه فعليًا. تبقى العملية غير مكتملة في التقارير العامة حتى تأكيد استلام المستفيد أو من ينوب عنه.</p><form id="distributionForm" class="formgrid">
  <div class="field"><label>طلب المساعدة</label><select name="request_id" id="distributionRequestSelect" required><option value="">اختر الطلب</option></select></div>
@@ -210,6 +210,76 @@ async function refresh(){
  $('caseSelect').innerHTML='<option value="">اختر رمز الحالة</option>'+options;
  $('orphanCaseSelect').innerHTML='<option value="">اختر رمز الحالة</option>'+options;
 }
+
+const VAPID_PUBLIC_KEY='BDNbxbHWLwifgsa35YvITzqVxDxOTZeJ3BfdyBgNi1HZAWLvZG6BK2-2eEc0t6Ksqb61_VzgJ7xQKvmHCh9h3lw';
+function pushApplicationKey(value){
+ const padding='='.repeat((4-value.length%4)%4);
+ const raw=atob((value+padding).replace(/-/g,'+').replace(/_/g,'/'));
+ return Uint8Array.from(raw,c=>c.charCodeAt(0));
+}
+async function saveDevicePushSubscription(subscription){
+ const data=subscription.toJSON();
+ if(!data.keys?.p256dh||!data.keys?.auth)throw new Error('بيانات اشتراك الإشعارات غير مكتملة.');
+ const {error}=await db.from('push_subscriptions').upsert({
+  user_id:currentUser.id,endpoint:subscription.endpoint,
+  p256dh:data.keys.p256dh,auth:data.keys.auth,user_agent:navigator.userAgent
+ },{onConflict:'endpoint'});
+ if(error)throw error;
+}
+async function initPushControls(role){
+ const controls=$('pushControls'),enable=$('enablePushBtn'),disable=$('disablePushBtn'),status=$('pushStatus');
+ if(!controls)return;
+ if(!['admin','accountant','researcher'].includes(role)){controls.hidden=true;return;}
+ controls.hidden=false;
+ if(!('serviceWorker' in navigator)||!('PushManager' in window)||!('Notification' in window)){
+  enable.disabled=true;status.textContent='هذا المتصفح لا يدعم إشعارات الهاتف.';return;
+ }
+ if(!enable.dataset.bound){
+  enable.dataset.bound='1';
+  enable.addEventListener('click',async()=>{
+   enable.disabled=true;status.textContent='جارٍ تفعيل الإشعارات…';
+   try{
+    const permission=await Notification.requestPermission();
+    if(permission!=='granted')throw new Error(permission==='denied'?'تم منع الإشعارات من إعدادات المتصفح.':'لم يتم السماح بالإشعارات.');
+    const registration=await navigator.serviceWorker.ready;
+    const subscription=await registration.pushManager.getSubscription()||await registration.pushManager.subscribe({
+     userVisibleOnly:true,applicationServerKey:pushApplicationKey(VAPID_PUBLIC_KEY)
+    });
+    await saveDevicePushSubscription(subscription);
+    await initPushControls(role);
+    status.textContent='تم تسجيل هذا الجهاز لاستقبال إشعارات سند.';
+   }catch(error){enable.disabled=false;status.textContent=error.message||'تعذر تفعيل الإشعارات.';}
+  });
+  disable.addEventListener('click',async()=>{
+   disable.disabled=true;status.textContent='جارٍ إيقاف الإشعارات…';
+   try{
+    const registration=await navigator.serviceWorker.ready;
+    const subscription=await registration.pushManager.getSubscription();
+    if(subscription){
+     const {error}=await db.from('push_subscriptions').delete().eq('endpoint',subscription.endpoint);
+     if(error)throw error;
+     await subscription.unsubscribe();
+    }
+    await initPushControls(role);
+    status.textContent='تم إيقاف إشعارات هذا الجهاز.';
+   }catch(error){disable.disabled=false;status.textContent=error.message||'تعذر إيقاف الإشعارات.';}
+  });
+ }
+ try{
+  const registration=await navigator.serviceWorker.ready;
+  const subscription=await registration.pushManager.getSubscription();
+  if(subscription){
+   await saveDevicePushSubscription(subscription);
+   enable.disabled=true;enable.textContent='الإشعارات مفعّلة لهذا الجهاز';disable.hidden=false;disable.disabled=false;
+   status.textContent='هذا الجهاز مسجل لاستقبال إشعارات سند.';
+  }else{
+   enable.disabled=Notification.permission==='denied';
+   enable.textContent='تفعيل إشعارات الهاتف';disable.hidden=true;
+   status.textContent=Notification.permission==='denied'?'الإشعارات محظورة. اسمح بها من إعدادات الموقع في المتصفح.':'فعّل الإشعارات مرة واحدة لاستقبال تنبيهات التبرعات والطلبات.';
+  }
+ }catch(error){enable.disabled=true;status.textContent='تعذر تجهيز خدمة الإشعارات. حدّث الصفحة وحاول مجددًا.';}
+}
+
 async function enter(user){
  const {data:profile,error}=await db.from('profiles').select('full_name,role,is_active').eq('id',user.id).single();
  const roleTabs={admin:['overview','campaigns','cases','aid','distributions','publicIntake','orphans','volunteers','announcements','sponsoredAds','finance','notifications','team'],accountant:['overview','campaigns','finance','notifications'],researcher:['overview','cases','aid','orphans','notifications'],distributor:['overview','cases','aid','distributions','notifications'],orphan_supervisor:['overview','cases','orphans','notifications'],volunteer:['overview','volunteers','notifications']};
@@ -218,7 +288,7 @@ async function enter(user){
  document.querySelectorAll('#nav button[data-tab]').forEach(button=>{button.hidden=!roleTabs[profile.role].includes(button.dataset.tab);});
  const roleNames={admin:'مدير عام',accountant:'محاسب',researcher:'باحث حالات',distributor:'مسؤول توزيع',orphan_supervisor:'مشرف أيتام',volunteer:'متطوع'};
  document.querySelector('.top .pill').textContent=roleNames[profile.role]||'عضو فريق';
- $('authView').classList.add('hidden');$('appView').classList.remove('hidden');$('signedUser').textContent=(profile.full_name||user.email)+' — '+user.email;await refresh();
+ $('authView').classList.add('hidden');$('appView').classList.remove('hidden');$('signedUser').textContent=(profile.full_name||user.email)+' — '+user.email;await refresh();await initPushControls(profile.role);
 }
 $('loginForm').addEventListener('submit',async e=>{
  e.preventDefault();
