@@ -129,3 +129,6 @@ main{width:100%;max-width:100%;overflow-x:clip}
  header .mobile-menu-toggle{display:none!important}
  header nav{display:flex!important}
 }
+
+/* Aid intake consent layout */
+.public-form .consent-row{display:flex;align-items:flex-start;gap:10px;font-weight:400;line-height:1.7}.public-form .consent-row input{width:auto;min-width:18px;min-height:18px;margin-top:4px;padding:0}.public-form label small{font-size:12px;font-weight:400;color:var(--muted)}
