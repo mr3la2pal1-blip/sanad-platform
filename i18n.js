@@ -1,0 +1,215 @@
+(() => {
+  'use strict';
+  const KEY = 'sanad_language';
+  const dict = {
+    'القائمة':'Menu','الخدمات':'Services','الإعلانات الممولة':'Sponsored ads','المبادرات':'Initiatives','التبرع':'Donate','طلب مساعدة':'Request aid','متابعة الطلب':'Track a request','الشفافية':'Transparency','خدمات المجتمع':'Community services','ساهم معنا':'Get involved',
+    'أدوات تسهيل الوصول':'Accessibility tools','تصغير الخط':'Decrease font size','تكبير الخط':'Increase font size','تباين أعلى':'High contrast','الوضع الليلي':'Dark mode','English':'العربية',
+    'ابحث في سند':'Search Sanad','ابحث عن حملة أو مساعدة أو خبر...':'Search for a campaign, assistance, or news...','البحث في الموقع':'Search the website',
+    'مبادرة إنسانية مستقلة':'Independent humanitarian initiative','معًا نكون ':'Together, we stand as ','سندًا':'support','لمن يحتاج إلينا':'for those who need us',
+    'نربط أهل الخير بالمبادرات الإنسانية لدعم الأيتام والعائلات المحتاجة، ونسعى إلى دعم المبادرات المجتمعية ومساندة الأسر المحتاجة، مع توضيح المعلومات المتاحة وحماية كرامة المستفيدين.':'We connect donors with humanitarian initiatives supporting orphans and families in need. We work to strengthen community initiatives, share available information transparently, and protect the dignity and privacy of those we serve.',
+    'قدّم طلب مساعدة':'Request assistance','تبرع الآن':'Donate now','استكشف المبادرات':'Explore initiatives','تنويه: سند مبادرة إنسانية مستقلة وليست جمعية أو مؤسسة مسجلة. لا تمثل جهة حكومية أو مؤسسة خيرية مرخصة.':'Notice: Sanad is an independent humanitarian initiative and is not a registered association or institution. It does not represent a government body or licensed charity.',
+    'العطاء يصنع فرقًا':'Giving makes a difference','خطوة صغيرة قد تعني الكثير':'A small step can mean a lot',
+    'خدمات المجتمع':'Community services','كيف يمكنك الاستفادة من سند؟':'How can you use Sanad?','طلب مساعدة':'Request assistance','قدّم طلب المساعدة من خلال النموذج الإلكتروني، وسيتم حفظه بسرية للمراجعة.':'Submit an assistance request using the online form. Your information will be kept confidential for review.','نموذج طلب المساعدة':'Assistance request form','كفالة يتيم':'Sponsor an orphan','تعرّف على برنامج الكفالة وآلية التحقق والمتابعة مع حماية خصوصية الأطفال.':'Learn about the sponsorship program, verification, and follow-up process while protecting children’s privacy.','عن برنامج الكفالة':'About the sponsorship program','التطوع':'Volunteer','ساهم بوقتك وخبرتك في تنظيم المبادرات والوصول للمستفيدين.':'Contribute your time and skills to organize initiatives and reach people in need.','سجل اهتمامك':'Register your interest',
+    'مجالات الدعم':'Areas of support','كل مساهمة تصنع أثرًا':'Every contribution makes an impact','مبادرات واضحة، لكل منها هدف وخطة تنفيذ وتقرير متابعة.':'Clear initiatives, each with a goal, implementation plan, and progress report.','كفالة الأيتام':'Orphan sponsorship','مساندة الأطفال الأيتام في احتياجاتهم الأساسية والتعليمية، مع حماية خصوصيتهم وكرامتهم.':'Supporting orphaned children with essential and educational needs while protecting their privacy and dignity.','السلال الغذائية':'Food parcels','توفير الاحتياجات الغذائية الأساسية للأسر التي تمر بظروف معيشية صعبة.':'Providing essential food supplies to families facing difficult living conditions.','سقيا الماء':'Clean water','المساهمة في توفير مياه الشرب النظيفة للمناطق والعائلات المحتاجة.':'Helping provide clean drinking water to communities and families in need.','الكسوة والشتاء':'Clothing and winter support','توفير الملابس والأغطية ومستلزمات الحماية من البرد حسب الأولويات.':'Providing clothing, blankets, and cold-weather essentials according to priority needs.','الإغاثة والمأوى':'Relief and shelter','مساندة المتضررين في الاحتياجات العاجلة بالتنسيق مع الجهات المختصة.':'Supporting people affected by emergencies in coordination with relevant organizations.','دعم التعليم':'Education support','توفير المستلزمات التعليمية والفرص التي تساعد الأطفال على مواصلة التعلم.':'Providing learning supplies and opportunities that help children continue their education.',
+    'خطوات واضحة':'Clear steps','كيف نعمل؟':'How we work','تحديد الاحتياج':'Identify needs','مراجعة الحالات بالتعاون مع جهات مختصة.':'Review cases with qualified partners.','تنظيم المبادرة':'Organize the initiative','تحديد الهدف والميزانية وخطة التنفيذ.':'Set the goal, budget, and implementation plan.','التنفيذ والتوثيق':'Delivery and documentation','تنفيذ المساعدة وتوثيق المصروفات.':'Deliver assistance and document expenses.','نشر التقرير':'Publish a report','تحديثات الإنجاز مع حماية بيانات المستفيدين.':'Share progress updates while protecting beneficiary information.',
+    'نموذج طلب مساعدة الأسرة':'Family assistance request form','يرجى إدخال البيانات بدقة حتى يتمكن فريق سند من مراجعة الحالة والتواصل معكم. لن تظهر البيانات الشخصية في الموقع العام.':'Please enter accurate information so the Sanad team can review your case and contact you. Personal information will never appear on the public website.',
+    'الاسم الكامل':'Full name','رقم الهوية':'ID number','يُحفظ رقم الهوية مشفرًا، ويقتصر الاطلاع عليه على المديرين المخولين.':'Your ID number is encrypted and accessible only to authorized administrators.','رقم الهاتف':'Phone number','المحافظة / المنطقة العامة':'Governorate / general area','مثال: نابلس أو شمال غزة':'Example: Nablus or northern Gaza','الحي أو البلدة (اختياري)':'Neighborhood or town (optional)','لا تكتب عنوان المنزل التفصيلي':'Do not enter your exact home address','عدد أفراد الأسرة':'Household size','عدد الأطفال':'Number of children','عدد كبار السن':'Number of elderly people','عدد أفراد الأسرة من ذوي الإعاقة':'Number of household members with disabilities','الحالة الاجتماعية':'Marital status','اختر الحالة':'Select status','أعزب/عزباء':'Single','متزوج/ة':'Married','أرمل/ة':'Widowed','مطلق/ة':'Divorced','أخرى':'Other','نوع المساعدة المطلوبة':'Type of assistance needed','اختر نوع الاحتياج':'Select a need','غذاء':'Food','ماء':'Water','كسوة':'Clothing','مأوى':'Shelter','تعليم':'Education','دواء أو رعاية صحية':'Medicine or healthcare','مساعدة مالية':'Financial assistance','شرح الحالة والاحتياج':'Describe your situation and needs','أوافق على استخدام البيانات من قبل فريق سند لمراجعة طلب المساعدة والتواصل بشأنه، وأفهم أن البيانات الشخصية ستُحفظ بشكل مشفر ويقتصر الاطلاع عليها على المخولين.':'I agree that the Sanad team may use this information to review my request and contact me. I understand that personal data will be encrypted and accessible only to authorized staff.','إرسال طلب المساعدة':'Submit assistance request','أكمل البيانات المطلوبة ثم أرسل الطلب.':'Complete the required fields and submit your request.',
+    'متابعة طلب المساعدة':'Track an assistance request','أين وصل طلبك؟':'What is the status of your request?','أدخل رقم المتابعة الذي ظهر لك بعد إرسال الطلب. لن نعرض الاسم أو رقم الهوية أو أي بيانات شخصية.':'Enter the reference number shown after submitting your request. We will not display your name, ID number, or other personal information.','رقم المتابعة':'Reference number','عرض حالة الطلب':'Check request status',
+    'رعاية تحفظ الكرامة والخصوصية':'Care that protects dignity and privacy','يُدار برنامج الكفالة عبر ملفات داخلية مرمّزة، والتحقق من الحالات، ومتابعة دورية. لا ننشر أسماء الأطفال أو صورهم أو مواقعهم.':'The sponsorship program uses coded internal records, case verification, and regular follow-up. We never publish children’s names, photos, or locations.','استقبال الحالة':'Receive a case','عبر باحثين مخولين.':'Through authorized caseworkers.','التحقق':'Verification','مراجعة الوثائق بسرية.':'Confidential document review.','مطابقة الكفالة':'Match sponsorship','وفق الاحتياج والأولوية.':'Based on need and priority.','المتابعة':'Follow-up','تقارير آمنة دون كشف الهوية.':'Secure reports without revealing identities.',
+    'نطاق العمل':'Coverage area','مناطق التغطية':'Areas we serve','تُحدّث هذه القائمة حسب قدرة الفرق والشركاء. لا نعرض مواقع العائلات أو نقاط توزيع حساسة.':'This list is updated according to team and partner capacity. We do not publish family locations or sensitive distribution points.','شمال قطاع غزة':'Northern Gaza Strip','مدينة غزة':'Gaza City','الوسطى والجنوب':'Central and southern areas','تغطية حسب توفر الفرق والاحتياجات.':'Coverage depends on team availability and needs.','تغطية حسب التنسيق والتحقق.':'Coverage depends on coordination and verification.','تغطية بالتعاون مع الجهات المحلية.':'Coverage in cooperation with local organizations.',
+    'متابعة المبادرات':'Initiative progress','الحملات المنشورة وتقدمها':'Published campaigns and progress','تعرض هذه البيانات التبرعات المؤكدة والمصروفات التي تم التحقق منها فقط. قد تختلف العملات ولا تُجمع في إجمالي واحد.':'This information includes confirmed donations and verified expenses only. Amounts in different currencies are not combined.','جارٍ تحميل الحملات المنشورة…':'Loading published campaigns…','لا توجد حملات منشورة حاليًا.':'There are no published campaigns at this time.','ملخص الأثر الموثق':'Verified impact summary','التبرعات المؤكدة':'Confirmed donations','المصروفات المتحقق منها':'Verified expenses','عمليات توزيع مؤكدة:':'Confirmed distributions:','لا تُحتسب أي عملية توزيع إلا بعد تسجيل تأكيد الاستلام.':'A distribution is counted only after receipt has been confirmed.',
+    'بوابة المتطوعين':'Volunteer portal','سجل اهتمامك بالتطوع':'Register your interest in volunteering','أرسل بيانات التواصل والمهارات، وسيبقى الطلب قيد المراجعة حتى يتواصل معك الفريق. لا ترسل وثائق شخصية عبر هذا النموذج.':'Share your contact details and skills. Your application will be reviewed and the team will contact you. Do not send personal documents through this form.','رقم التواصل':'Contact number','المنطقة العامة':'General area','المحافظة أو المنطقة':'Governorate or area','مجال التطوع والمهارات':'Volunteer interests and skills','التنسيق، التوزيع، الترجمة، إدخال البيانات...':'Coordination, distribution, translation, data entry...','إرسال طلب التطوع':'Submit volunteer application','لن تظهر بياناتك في الموقع العام.':'Your information will not appear on the public website.',
+    'مساحة إعلانية':'Advertising space','إعلانات ممولة':'Sponsored advertisements','إعلانات منشورة بعد تأكيد استلام رسومها، وتظهر خلال المدة المحددة فقط.':'Advertisements are published only after payment is confirmed and appear only during the approved period.','جارٍ تحميل الإعلانات الممولة…':'Loading sponsored ads…',
+    'آخر المستجدات':'Latest updates','أخبار وتحديثات سند':'Sanad news and updates','بدء تجهيز المبادرات':'Preparing initiatives','نعمل على تنظيم ملفات الحملات وآليات التحقق والتوزيع.':'We are organizing campaign records and verification and distribution processes.','الخصوصية أولًا':'Privacy first','نلتزم بعدم نشر معلومات تعريفية عن الأطفال والعائلات.':'We are committed to never publishing identifying information about children or families.','التعاون المجتمعي':'Community cooperation','نسعى للتنسيق مع الجهات المختصة والشركاء المحليين.':'We aim to coordinate with relevant organizations and local partners.',
+    'الثقة مسؤولية':'Trust is a responsibility','الشفافية جزء من رسالتنا':'Transparency is part of our mission','نسعى إلى أن يكون لكل مبادرة هدف واضح وسجل للمساهمات والمصروفات وتحديثات التنفيذ. لن نعرض بيانات شخصية أو صورًا تكشف هوية الأطفال والعائلات.':'Every initiative should have a clear goal, a record of contributions and expenses, and implementation updates. We do not display personal data or images that identify children or families.','توضيح أهداف المبادرات واحتياجاتها':'Clearly explain initiative goals and needs','توثيق المبالغ والمصروفات':'Document amounts and expenses','تقارير متابعة بعد التنفيذ':'Follow-up reports after delivery','حماية خصوصية وكرامة المستفيدين':'Protect beneficiaries’ privacy and dignity',
+    'حملة سند الإنسانية':'Sanad humanitarian campaign','معًا نكون عونًا — ساهم في مبادرات سند':'Together we can help — support Sanad initiatives','تستقبل سند المساهمات الرقمية لدعم مبادراتها الإنسانية في الغذاء والمياه والكسوة والتعليم ومساندة الأيتام. قبل التحويل، راجع العملة والشبكة وعنوان الاستقبال بعناية.':'Sanad accepts digital contributions to support food, water, clothing, education, and orphan-support initiatives. Before transferring, carefully verify the currency, network, and receiving address.','العملة':'Currency','الشبكة':'Network','عنوان الاستقبال':'Receiving address','نسخ عنوان الاستقبال':'Copy receiving address','امسح الرمز من محفظتك لقراءة عنوان الاستقبال، ثم تأكد من العملة والشبكة قبل التحويل.':'Scan the code with your wallet to read the receiving address. Confirm the currency and network before transferring.','تحقق من العنوان والشبكة في محفظتك قبل الإرسال.':'Verify the address and network in your wallet before sending.','سجل التبرعات المؤكدة':'Confirmed donations record','يعرض هذا السجل المساهمات التي تم التحقق من وصولها فقط. لا تُعرض بيانات المتبرعين الشخصية.':'This record displays only contributions whose receipt has been verified. Donors’ personal information is not shown.','جارٍ تحميل إجمالي التبرعات المؤكدة…':'Loading confirmed donation totals…','جارٍ تحميل سجل التبرعات…':'Loading donation records…',
+    'تنبيه مهم: عنوان الاستقبال مخصص للإيداع على شبكة BNB Smart Chain (BEP20) وفق تأكيد صاحب الحساب. لا ترسل عبر شبكة أخرى أو بأصل مختلف. تحقّق بنفسك من تفاصيل التحويل في محفظتك قبل التأكيد، واحتفظ برقم المعاملة (TXID). لا تعتبر المساهمة مستلمة أو مؤكدة إلا بعد التحقق من ظهور التحويل على الشبكة ومطابقته مع سجل الاستقبال. سند مبادرة إنسانية مستقلة وليست جمعية أو مؤسسة مسجلة؛ راجع وضعها القانوني وأي مخاطر مرتبطة بالتحويلات الرقمية قبل التبرع.':'Important: The receiving address is intended for deposits on BNB Smart Chain (BEP20), as confirmed by the account owner. Do not use another network or asset. Verify the transfer details in your wallet and keep the transaction ID (TXID). A contribution is not considered received or confirmed until the on-chain transfer is verified and matched with the receiving record. Sanad is an independent humanitarian initiative, not a registered association or institution. Review its legal status and the risks of digital transfers before donating.',
+    'كن جزءًا من الأثر':'Be part of the impact','يدٌ بيد، نصل إلى من يحتاج':'Together, we reach those in need','سند مبادرة مستقلة. زر نسخ رسالة الاهتمام ينسخ نصًا إلى جهازك فقط ولا ينشئ قناة تواصل مباشرة.':'Sanad is an independent initiative. The copy-interest button only copies text to your device; it does not create a direct communication channel.','نسخ رسالة اهتمام':'Copy an interest message','تُنسخ الرسالة إلى جهازك فقط ولا تُرسل تلقائيًا.':'The message is copied to your device only and is not sent automatically.','معًا نكون عونًا وأملًا.':'Together, we offer support and hope.','شعار سند':'Sanad logo','شعار منصة سند الخيرية':'Sanad humanitarian platform logo',
+    'تم نسخ عنوان الاستقبال. تأكد من الشبكة قبل التحويل.':'Receiving address copied. Verify the network before transferring.','تعذر النسخ تلقائيًا. اضغط مطولًا على العنوان لنسخه يدويًا.':'Could not copy automatically. Press and hold the address to copy it manually.','تم نسخ رسالة الاهتمام. يمكنك لصقها وإرسالها بالطريقة التي تناسبك.':'Interest message copied. You can paste and send it as you wish.','الأقسام المطابقة:':'Matching sections:','جارٍ تحميل الحملات':'Loading campaigns','تعذر تحميل تقارير الحملات حاليًا.':'Campaign reports are currently unavailable.','حملة إنسانية منشورة من سند':'A humanitarian campaign published by Sanad','المساهمات المؤكدة:':'Confirmed contributions:','الهدف:':'Target:','المصروفات المتحقق منها:':'Verified expenses:','من الهدف':'of the target',
+    'دخول الإدارة':'Admin sign in','لوحة إدارة سند':'Sanad Admin Dashboard','سجّل الدخول بحسابك المعتمد للوصول إلى لوحة الإدارة الآمنة.':'Sign in with your authorized account to access the secure administration dashboard.','البريد الإلكتروني':'Email address','كلمة المرور':'Password','تسجيل الدخول':'Sign in','نسيت كلمة المرور؟':'Forgot password?','لا تشارك كلمة المرور مع أي شخص. يتم التحقق من دورك من قاعدة البيانات وسياسات الحماية.':'Never share your password. Your role is verified through the database and security policies.','تعيين كلمة مرور جديدة':'Set a new password','أدخل كلمة مرور جديدة لحسابك، ثم سجّل الدخول بها.':'Enter a new password for your account, then sign in with it.','كلمة المرور الجديدة':'New password','تأكيد كلمة المرور':'Confirm password','حفظ كلمة المرور':'Save password','سند':'Sanad','منصة سند':'Sanad Platform','التبرع | منصة سند':'Donate | Sanad Platform','← العودة إلى منصة سند':'← Back to Sanad Platform','المساهمة والدعم':'Contribute and support','ساهم في دعم مبادرات سند':'Support Sanad initiatives','بيانات الاستقبال للتحويل بعملة USDT:':'Receiving details for USDT transfers:','تأكد من الشبكة والعنوان قبل أي تحويل.':'Verify the network and address before any transfer.','تنبيه مهم: أرسل USDT فقط عبر شبكة BNB Smart Chain (BEP20). لا ترسل عملات أو رموزًا أخرى أو عبر شبكة مختلفة؛ فقد يؤدي ذلك إلى فقدان الأموال. تحقق من العنوان والمبلغ قبل تأكيد التحويل واحتفظ بإيصال العملية.':'Important: Send USDT only on the BNB Smart Chain (BEP20) network. Do not send other coins or tokens, or use a different network, as this may result in loss of funds. Verify the address and amount before confirming the transfer, and keep the transaction receipt.','← العودة إلى منصة سند':'← Back to Sanad Platform','سند | معًا نكون عونًا':'Sanad | Together, we can help','نظرة عامة':'Overview','الحملات':'Campaigns','ملفات الأسر':'Family cases','طلبات المساعدة':'Assistance requests','التوزيعات':'Distributions','طلبات الموقع الواردة':'Incoming website requests','كفالة الأيتام':'Orphan sponsorship','المتطوعون':'Volunteers','الإعلانات':'Announcements','السجل المالي':'Financial records','التنبيهات':'Notifications','الصلاحيات':'Permissions','وصول مقيّد حسب دور الحساب. لا تضف أسماء الأطفال أو عناوين الأسر في الملاحظات العامة.':'Access is restricted by account role. Do not add children’s names or family addresses to public notes.','مدير عام':'Administrator','تسجيل الخروج':'Sign out','قاعدة البيانات متصلة. لا تُدخل بيانات مستفيدين حقيقية إلا بعد اعتماد إجراءات الخصوصية والنسخ الاحتياطي والتشغيل المؤسسي. لا توجد بوابة دفع مفعّلة.':'Database connected. Do not enter real beneficiary data until privacy, backup, and operational procedures are approved. No payment gateway is enabled.','حالة الربط':'Connection status','جارٍ تحميل بيانات قاعدة البيانات…':'Loading database information…','آخر الحملات':'Recent campaigns','لا توجد بيانات بعد.':'No data yet.','إضافة حملة إلى قاعدة البيانات':'Add a campaign to the database','اسم الحملة':'Campaign name','الهدف المالي التخطيطي':'Planned financial target','شيكل (ILS)':'Shekel (ILS)','دولار (USD)':'US dollar (USD)','يورو (EUR)':'Euro (EUR)','الحالة':'Status','مسودة':'Draft','منشورة':'Published','مغلقة':'Closed','الوصف':'Description','حفظ الحملة':'Save campaign','الحملات المسجلة':'Recorded campaigns','جارٍ التحميل…':'Loading…','فتح ملف أسرة (رمز داخلي فقط)':'Create a family case (internal code only)','رمز الحالة':'Case code','الحي / المنطقة الفرعية (اختياري)':'Neighborhood / sub-area (optional)','الأولوية':'Priority','عادية':'Normal','حفظ':'Save','تعديل':'Edit','حذف':'Delete','إغلاق':'Close','بحث':'Search','عرض':'View','إرسال':'Submit','ملاحظات':'Notes','المبلغ':'Amount','التاريخ':'Date','الإجراء':'Action','الاسم':'Name','المنطقة':'Area','نوع المساعدة':'Assistance type','رقم المعاملة':'Transaction ID','تأكيد':'Confirm','إيقاف':'Pause','نشر':'Publish','مدفوع':'Paid','معلق':'Pending','مؤكد':'Confirmed','إجمالي':'Total','غير متاح':'Unavailable',
+    'جارٍ التحقق من الحساب…':'Verifying account…','لم يكتمل تسجيل الدخول. تأكد من بيانات الحساب وحاول مجددًا.':'Sign-in failed. Check your account details and try again.','حدث خطأ أثناء تسجيل الدخول. حاول مرة أخرى.':'An error occurred while signing in. Please try again.','هذا الحساب غير مخول للدخول أو أنه غير نشط.':'This account is not authorized or is inactive.','عضو فريق':'Team member','اكتب بريدك الإلكتروني أولًا.':'Enter your email address first.','استخدمت المحاولات الثلاث. حاول مجددًا بعد ':'You have used all three attempts. Try again in ',' دقيقة تقريبًا.':' minutes.','إذا كان البريد مسجلًا، ستصلك رسالة الاستعادة. تبقّت لك ':'If the email is registered, you will receive a reset message. You have ',' من 3 محاولات خلال 24 ساعة.':' of 3 attempts remaining within 24 hours.','تعذّر إرسال رابط الاستعادة: ':'Could not send the recovery link: ','وصلنا إلى حد إرسال الرسائل مؤقتًا؛ انتظر قبل المحاولة التالية.':'The email sending limit has been reached. Please wait before trying again.','كلمة المرور يجب أن تكون 8 أحرف على الأقل.':'Password must be at least 8 characters.','كلمتا المرور غير متطابقتين.':'Passwords do not match.','جارٍ تحديث كلمة المرور…':'Updating password…','تعذّر تحديث كلمة المرور: ':'Could not update password: ','تم تحديث كلمة المرور بنجاح. سجّل الدخول بكلمة المرور الجديدة.':'Password updated successfully. Sign in with your new password.','هل أنت متأكد من حذف هذا الطلب نهائيًا؟ لا يمكن التراجع عن الحذف.':'Are you sure you want to permanently delete this request? This cannot be undone.','تم تحديث حالة الطلب.':'Request status updated.','تعذر تحديث حالة الطلب: ':'Could not update request status: ','تعذّر فتح الطلب للتعديل: ':'Could not open the request for editing: ','تعذّر حذف الطلب: ':'Could not delete the request: ','لم يُحذف الطلب. لا تملك الجلسة صلاحية الحذف أو أن الطلب غير موجود.':'The request was not deleted. Your session may not have permission, or the request may not exist.','تم حفظ التعديلات بنجاح.':'Changes saved successfully.','تعذّر حفظ التعديلات: ':'Could not save changes: ','لم تُحفظ التعديلات. لا تملك الجلسة صلاحية التعديل أو أن الطلب غير موجود.':'Changes were not saved. Your session may not have permission, or the request may not exist.','تعذر تسجيل الدخول':'Sign-in failed','تم الحفظ بنجاح في قاعدة بيانات سند.':'Saved successfully to the Sanad database.','لم يتم الحفظ: ':'Could not save: ','حدث خطأ':'An error occurred'
+  };
+  Object.assign(dict, {
+    'تم استلام طلبك بنجاح. رقم المتابعة: ':'Your request was received successfully. Reference number: ',
+    'تعذر إرسال الطلب: ':'Could not submit the request: ',
+    'تم استلام طلبك. رقم المتابعة الداخلي: ':'Your request was received. Internal reference: ',
+    'لا توجد إعلانات ممولة نشطة حاليًا.':'There are no active sponsored ads at this time.',
+    'صورة إعلان ':'Advertisement image ',
+    'المعلن: ':'Advertiser: ',
+    'ينتهي: ':'Ends: ',
+    'إجمالي التبرعات المؤكدة (':'Total confirmed donations (',
+    ' عملية مؤكدة ضمن السجل المعروض':' confirmed transactions in the displayed record',
+    'لا توجد عمليات تبرع مؤكدة للعرض حاليًا. ستظهر هنا بعد مطابقة التحويلات وتأكيد وصولها.':'There are no confirmed donations to display yet. They will appear here after transfers are matched and receipt is verified.',
+    'الرقم المرجعي':'Reference','الحملة':'Campaign','المبلغ':'Amount','تاريخ التأكيد':'Confirmation date','الحالة':'Status',
+    'مؤكد بعد التحقق':'Confirmed after verification',
+    'تعذر تحميل إجمالي التبرعات حاليًا.':'Unable to load donation totals at this time.',
+    'تعذر تحميل سجل التبرعات. يرجى المحاولة لاحقًا.':'Unable to load donation records. Please try again later.',
+    'تحقق من رقم المتابعة. الصيغة المتوقعة SAN-XXXXXXXX.':'Check the reference number. Expected format: SAN-XXXXXXXX.',
+    'رقم الطلب: ':'Request number: ',' — الحالة: ':' — Status: ',' — آخر تحديث: ':' — Last updated: ',
+    'تعذر تحميل تقارير الحملات حاليًا.':'Campaign reports are currently unavailable.',
+    'لا توجد إعلانات ممولة حتى الآن':'No sponsored ads yet',
+    'المعلن':'Advertiser','الإعلان':'Ad','السعر':'Price','الدفع':'Payment','النشر':'Publication','المدة':'Duration','إجراءات':'Actions',
+    'لا توجد سجلات حتى الآن':'No records yet','تعذّر تحميل البيانات: ':'Could not load data: ',
+    'معرّف جلسة الدخول: ':'Login session ID: ','فحص صلاحية المدير من داخل الجلسة: ':'Admin permission check from this session: ','عدد السجلات المرئية للجلسة: ':'Records visible to this session: ','تعذّر تحميل طلبات الموقع: ':'Could not load website requests: ',
+    'المرجع':'Reference','العملة':'Currency','الشبكة':'Network','TXID':'TXID','إجراء':'Action',
+    'لا توجد تبرعات مسجلة حتى الآن.':'No donations have been recorded yet.',
+    'الوصف':'Description','مرجع المستند':'Document reference','لا توجد مصروفات مسجلة حتى الآن.':'No expenses have been recorded yet.',
+    'المساعدة':'Assistance','الكمية':'Quantity','حالة الاستلام':'Receipt status','تاريخ التسليم':'Delivery date','لا توجد سجلات توزيع حتى الآن.':'No distribution records yet.',
+    'التفاصيل':'Details','لا توجد تنبيهات جديدة.':'No new notifications.',
+    'معرّف الحساب':'Account ID','الدور':'Role','لا توجد حسابات فريق.':'No team accounts.',
+    'تعذّر تحميل طلبات الموقع: ':'Could not load website requests: ',
+    'تم نسخ عنوان الاستقبال. تأكد من الشبكة قبل التحويل.':'Receiving address copied. Verify the network before transferring.',
+    'تعذر النسخ تلقائيًا. اضغط مطولًا على العنوان لنسخه يدويًا.':'Could not copy automatically. Press and hold the address to copy it manually.'
+  });
+
+  Object.assign(dict, {
+    "ملفات الأيتام":"Orphan records",
+    "مرتفعة":"High",
+    "طارئة":"Urgent",
+    "منخفضة":"Low",
+    "جديد":"New",
+    "قيد الدراسة":"Under review",
+    "معتمد":"Approved",
+    "نشط":"Active",
+    "مغلق":"Closed",
+    "مرفوض":"Rejected",
+    "حفظ ملف الأسرة":"Save family case",
+    "لا تضع الاسم أو الهاتف أو العنوان التفصيلي هنا. تفاصيل الاتصال لها جدول خاص وصلاحيات منفصلة.":"Do not enter names, phone numbers, or exact addresses here. Contact details are stored in a separate table with separate permissions.",
+    "تسجيل طلب مساعدة لملف موجود":"Record an assistance request for an existing case",
+    "ملف الأسرة":"Family case",
+    "اختر رمز الحالة":"Select a case code",
+    "نوع الاحتياج":"Type of need",
+    "صحي":"Health",
+    "نقدي":"Cash",
+    "قيد المراجعة":"Under review",
+    "مجدول":"Scheduled",
+    "تم التسليم":"Delivered",
+    "وصف مختصر غير حساس":"Brief non-sensitive description",
+    "حفظ الطلب":"Save request",
+    "طلبات المساعدة المرسلة من الموقع":"Assistance requests submitted through the website",
+    "هذه الطلبات منفصلة عن الطلبات المرتبطة بملفات الأسر. تظهر هنا للمدير فقط وفق سياسات قاعدة البيانات.":"These requests are separate from requests linked to family records. They are visible here only to administrators under database policies.",
+    "وسيلة التواصل":"Contact method",
+    "حفظ التعديلات":"Save changes",
+    "إلغاء":"Cancel",
+    "إضافة ملف كفالة برمز داخلي":"Add a sponsorship record using an internal code",
+    "ملف الأسرة المرتبط":"Linked family case",
+    "رمز ملف اليتيم":"Orphan record code",
+    "العمر (بالسنوات)":"Age (years)",
+    "بانتظار التحقق":"Awaiting verification",
+    "مؤهل":"Eligible",
+    "مكفول":"Sponsored",
+    "موقوف مؤقتًا":"Temporarily paused",
+    "حفظ ملف الكفالة":"Save sponsorship record",
+    "لا تدخل اسم الطفل أو صورته أو مدرسته أو بيانات تعريفية.":"Do not enter the child’s name, photo, school, or identifying information.",
+    "ملفات الكفالة":"Sponsorship records",
+    "إضافة متطوع":"Add volunteer",
+    "غير نشط":"Inactive",
+    "المهارات (افصل بينها بفاصلة)":"Skills (separate with commas)",
+    "حفظ المتطوع":"Save volunteer",
+    "إضافة إعلان":"Add announcement",
+    "العنوان":"Title",
+    "النشر":"Publishing",
+    "نشر الآن":"Publish now",
+    "النص":"Text",
+    "حفظ الإعلان":"Save announcement",
+    "إضافة إعلان ممول":"Add sponsored ad",
+    "أضف بيانات الإعلان وسعره ومدة عرضه. يبقى الإعلان مخفيًا حتى تؤكد استلام المبلغ ثم تختار نشره.":"Enter the ad details, price, and display period. The ad remains hidden until you confirm payment and choose to publish it.",
+    "اسم المعلن":"Advertiser name",
+    "عنوان الإعلان":"Ad title",
+    "نص الإعلان":"Ad text",
+    "رابط صورة الإعلان (اختياري)":"Ad image URL (optional)",
+    "رابط الإعلان أو التواصل (اختياري)":"Ad or contact URL (optional)",
+    "السعر المتفق عليه":"Agreed price",
+    "بداية الإعلان":"Ad start",
+    "نهاية الإعلان":"Ad end",
+    "حالة الإعلان":"Ad status",
+    "مسودة — غير منشور":"Draft — unpublished",
+    "جاهز للنشر بعد تأكيد الدفع":"Ready to publish after payment confirmation",
+    "إدارة الإعلانات الممولة":"Manage sponsored ads",
+    "التنبيهات الداخلية":"Internal notifications",
+    "تنبيهات تلقائية لطلبات المساعدة الجديدة والتبرعات المؤكدة والإعلانات المنشورة، وتظهر للمستخدمين المخولين فقط.":"Automatic notifications for new assistance requests, confirmed donations, and published ads. Visible only to authorized users.",
+    "إدارة أدوار الفريق":"Manage team roles",
+    "يمكن للمدير العام تعديل أدوار الحسابات الموجودة فقط. إنشاء حساب دخول جديد يتم من نظام المصادقة، وليس من هذه الشاشة.":"The administrator can only change roles for existing accounts. New login accounts must be created in the authentication system, not here.",
+    "تسجيل عملية توزيع":"Record a distribution",
+    "سجل ما تم توزيعه فعليًا. تبقى العملية غير مكتملة في التقارير العامة حتى تأكيد استلام المستفيد أو من ينوب عنه.":"Record what was actually distributed. The transaction remains incomplete in public reports until receipt is confirmed by the beneficiary or their representative.",
+    "اختر الطلب":"Select a request",
+    "اختر ملف الأسرة":"Select a family case",
+    "نوع المساعدة":"Assistance type",
+    "الكمية / عدد الوحدات":"Quantity / number of units",
+    "الرقم المرجعي للتوزيع":"Distribution reference",
+    "ملاحظات غير حساسة":"Non-sensitive notes",
+    "حفظ سجل التوزيع":"Save distribution record",
+    "سجلات التوزيع":"Distribution records",
+    "تسجيل تبرع وارد يدويًا":"Manually record an incoming donation",
+    "يسجل التبرع أولًا بانتظار التحقق. لا تؤكد الاستلام إلا بعد مطابقة التحويل على الشبكة والتحقق من وصوله فعليًا.":"The donation is first recorded as pending verification. Confirm receipt only after matching the on-chain transfer and verifying that it arrived.",
+    "الحملة (اختياري)":"Campaign (optional)",
+    "حملة سند العامة":"General Sanad campaign",
+    "اسم المتبرع (اختياري، داخلي)":"Donor name (optional, internal)",
+    "مرجع التحويل":"Transfer reference",
+    "معرّف المعاملة TXID":"Transaction ID (TXID)",
+    "حفظ بانتظار التحقق":"Save as pending verification",
+    "سجل التبرعات":"Donation records",
+    "تسجيل مصروف فعلي":"Record an actual expense",
+    "أدخل المصروف بعد حدوثه، ثم تحقّق منه بعد مراجعة الإيصال أو المستند. لا تسجل تقديرات على أنها مصروفات مدفوعة.":"Enter an expense after it occurs, then verify it after reviewing the receipt or document. Do not record estimates as paid expenses.",
+    "مصروف عام":"General expense",
+    "وصف المصروف":"Expense description",
+    "التصنيف":"Category",
+    "طبي":"Medical",
+    "مياه":"Water",
+    "نقل":"Transport",
+    "تشغيل":"Operations",
+    "مرجع الإيصال / المستند":"Receipt / document reference",
+    "حفظ المصروف للمراجعة":"Save expense for review",
+    "المصروفات المسجلة":"Recorded expenses",
+    "سجل التدقيق":"Audit log",
+    "يسجل التغييرات المالية وتحديثات حالة الطلب دون نسخ أرقام الهوية أو بيانات الاتصال إلى سجل التدقيق.":"The audit log records financial changes and request-status updates without copying ID numbers or contact details."
+  });
+  const pairs = Object.entries(dict).sort((a,b)=>b[0].length-a[0].length);
+  let lang = 'ar';
+  const getLang = () => {
+    try { const saved=localStorage.getItem(KEY); if(saved==='ar'||saved==='en') return saved; } catch {}
+    return /^ar(?:-|$)/i.test(navigator.language||'') ? 'ar' : 'en';
+  };
+  const translate = value => {
+    if(!value || lang==='ar') return value;
+    let out=value;
+    for(const [ar,en] of pairs) if(out.includes(ar)) out=out.split(ar).join(en);
+    return out;
+  };
+  const apply = root => {
+    if(lang==='ar') return;
+    const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);
+    const nodes=[]; while(walker.nextNode()) nodes.push(walker.currentNode);
+    for(const node of nodes){ if(node.parentElement?.closest('script,style,noscript,textarea,[data-no-translate]')) continue; const next=translate(node.nodeValue); if(next!==node.nodeValue) node.nodeValue=next; }
+    root.querySelectorAll?.('input[placeholder],textarea[placeholder],[aria-label],[title],img[alt]').forEach(el=>{
+      for(const attr of ['placeholder','aria-label','title','alt']) if(el.hasAttribute(attr)){const v=el.getAttribute(attr),t=translate(v);if(t!==v)el.setAttribute(attr,t);}
+    });
+  };
+  const setup = () => {
+    const style=document.createElement('style');
+    style.textContent='html[dir="ltr"] body{text-align:left} html[dir="ltr"] .side nav button,html[dir="ltr"] th,html[dir="ltr"] td{text-align:left} html[dir="ltr"] .auth{text-align:left} html[dir="ltr"] .public-form,html[dir="ltr"] .searchbar{text-align:left} html[dir="ltr"] .access-tools{direction:ltr}';
+    document.head.appendChild(style);
+    lang=getLang();
+    const root=document.documentElement;
+    const button=document.getElementById('lang');
+    const adminButton=document.getElementById('languageToggle');
+    const controls=[button,adminButton].filter(Boolean);
+    const render=()=>{
+      root.lang=lang;root.dir=lang==='ar'?'rtl':'ltr';
+      document.body.dir=root.dir;
+      controls.forEach(b=>{b.textContent=lang==='ar'?'English':'العربية';b.setAttribute('aria-label',lang==='ar'?'Switch to English':'التبديل إلى العربية');});
+      apply(document.body);
+      document.title=translate(document.title);
+    };
+    controls.forEach(b=>b.addEventListener('click',()=>{
+      lang=lang==='ar'?'en':'ar';
+      try{localStorage.setItem(KEY,lang);}catch{}
+      location.reload();
+    }));
+    render();
+    const observer=new MutationObserver(records=>{for(const rec of records){if(rec.type==='childList')rec.addedNodes.forEach(n=>{if(n.nodeType===1)apply(n);else if(n.nodeType===3)n.nodeValue=translate(n.nodeValue);});else if(rec.type==='characterData')rec.target.nodeValue=translate(rec.target.nodeValue);}});
+    observer.observe(document.body,{subtree:true,childList:true,characterData:true});
+    if(button) button.textContent=lang==='ar'?'English':'العربية';
+  };
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',setup,{once:true});else setup();
+})();
