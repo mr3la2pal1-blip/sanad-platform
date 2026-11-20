@@ -85,7 +85,29 @@
    <div class="field"><label>بداية الإعلان</label><input name="starts_at" type="datetime-local"></div><div class="field"><label>نهاية الإعلان</label><input name="ends_at" type="datetime-local" required></div>
    <div class="field"><label>حالة الإعلان</label><select name="status"><option value="draft">مسودة — غير منشور</option><option value="published">جاهز للنشر بعد تأكيد الدفع</option></select></div><div><button class="btn" type="submit">حفظ الإعلان</button></div>
   </form></div><div class="panel"><h2>إدارة الإعلانات الممولة</h2><div id="sponsoredAdTable" class="empty">جارٍ التحميل…</div></div></section>
-<section id="finance" class="section"><div class="panel"><h2>السجل المالي</h2><p class="notice">السجلات هنا للقراءة فقط في هذه المرحلة. لا توجد بوابة دفع متصلة، ولا تعتبر أي قيمة تبرعًا مستلمًا إلا بعد تحقق مالي مستقل.</p><div id="donationTable" class="empty">جارٍ التحميل…</div></div></section>
+<section id="finance" class="section">
+ <div class="panel"><h2>تسجيل تبرع وارد يدويًا</h2><p class="notice">يسجل التبرع أولًا بانتظار التحقق. لا تؤكد الاستلام إلا بعد مطابقة التحويل على الشبكة والتحقق من وصوله فعليًا.</p><form id="donationEntryForm" class="formgrid">
+  <div class="field"><label>الحملة (اختياري)</label><select name="campaign_id" id="donationCampaignSelect"><option value="">حملة سند العامة</option></select></div>
+  <div class="field"><label>المبلغ</label><input name="amount" type="number" min="0.01" step="0.01" required></div>
+  <div class="field"><label>العملة</label><select name="currency"><option value="USD">دولار (USD)</option><option value="ILS">شيكل (ILS)</option><option value="EUR">يورو (EUR)</option></select></div>
+  <div class="field"><label>اسم المتبرع (اختياري، داخلي)</label><input name="donor_name" maxlength="160"></div>
+  <div class="field"><label>مرجع التحويل</label><input name="payment_reference" maxlength="180" required></div>
+  <div class="field"><label>الشبكة</label><input name="network" maxlength="80" placeholder="BEP20"></div>
+  <div class="field wide"><label>معرّف المعاملة TXID</label><input name="transaction_hash" maxlength="220" dir="ltr"></div><div><button class="btn" type="submit">حفظ بانتظار التحقق</button></div>
+ </form></div>
+ <div class="panel"><h2>سجل التبرعات</h2><div id="donationTable" class="empty">جارٍ التحميل…</div></div>
+ <div class="panel"><h2>تسجيل مصروف فعلي</h2><p class="subtle">أدخل المصروف بعد حدوثه، ثم تحقّق منه بعد مراجعة الإيصال أو المستند. لا تسجل تقديرات على أنها مصروفات مدفوعة.</p>
+ <form id="campaignExpenseForm" class="formgrid">
+  <div class="field"><label>الحملة (اختياري)</label><select name="campaign_id" id="expenseCampaignSelect"><option value="">مصروف عام</option></select></div>
+  <div class="field"><label>وصف المصروف</label><input name="description" maxlength="500" required></div>
+  <div class="field"><label>التصنيف</label><select name="category"><option value="food">غذاء</option><option value="medical">طبي</option><option value="shelter">مأوى</option><option value="water">مياه</option><option value="education">تعليم</option><option value="clothing">كسوة</option><option value="transport">نقل</option><option value="operations">تشغيل</option><option value="other">أخرى</option></select></div>
+  <div class="field"><label>المبلغ</label><input name="amount" type="number" min="0.01" step="0.01" required></div>
+  <div class="field"><label>العملة</label><select name="currency"><option value="USD">دولار (USD)</option><option value="ILS">شيكل (ILS)</option><option value="EUR">يورو (EUR)</option></select></div>
+  <div class="field"><label>مرجع الإيصال / المستند</label><input name="receipt_reference" maxlength="180"></div><div><button class="btn" type="submit">حفظ المصروف للمراجعة</button></div>
+ </form></div>
+ <div class="panel"><h2>المصروفات المسجلة</h2><div id="expenseTable" class="empty">جارٍ التحميل…</div></div>
+ <div class="panel"><h2>سجل التدقيق</h2><p class="subtle">يسجل التغييرات المالية وتحديثات حالة الطلب دون نسخ أرقام الهوية أو بيانات الاتصال إلى سجل التدقيق.</p><div id="auditTable" class="empty">جارٍ التحميل…</div></div>
+ </section>
  </main>
 </div>
 <script>
@@ -125,13 +147,13 @@ function renderTable(id,rows,cols){const el=$(id);if(!rows?.length){el.innerHTML
 function renderPublicIntake(rows){
  const el=$('publicIntakeTable');
  if(!rows?.length){el.innerHTML='<div class="empty">لا توجد سجلات حتى الآن</div>';return;}
- const cols=[['full_name','الاسم الكامل'],['identity_number','رقم الهوية'],['phone','الهاتف'],['need_type','نوع الاحتياج'],['region','المنطقة'],['locality','البلدة/الحي'],['household_size','أفراد الأسرة'],['children_count','الأطفال'],['elderly_count','كبار السن'],['disability_count','ذوو الإعاقة'],['marital_status','الحالة الاجتماعية'],['details','تفاصيل الحالة'],['created_at','تاريخ الإرسال']];
- el.innerHTML='<div class="table-wrap"><table><thead><tr>'+cols.map(c=>'<th>'+c[1]+'</th>').join('')+'<th>الإجراءات</th></tr></thead><tbody>'+rows.map(r=>'<tr>'+cols.map(c=>'<td>'+safe(r[c[0]])+'</td>').join('')+'<td><div class="table-actions"><button class="btn secondary" type="button" data-intake-action="edit" data-id="'+safe(r.id)+'">تعديل</button><button class="btn danger" type="button" data-intake-action="delete" data-id="'+safe(r.id)+'">حذف</button></div></td></tr>').join('')+'</tbody></table></div>';
+ const cols=[['public_reference','رقم المتابعة'],['status','الحالة'],['full_name','الاسم الكامل'],['identity_number','رقم الهوية'],['phone','الهاتف'],['need_type','نوع الاحتياج'],['region','المنطقة'],['locality','البلدة/الحي'],['household_size','أفراد الأسرة'],['children_count','الأطفال'],['elderly_count','كبار السن'],['disability_count','ذوو الإعاقة'],['marital_status','الحالة الاجتماعية'],['details','تفاصيل الحالة'],['created_at','تاريخ الإرسال']];
+ el.innerHTML='<div class="table-wrap"><table><thead><tr>'+cols.map(c=>'<th>'+c[1]+'</th>').join('')+'<th>الإجراءات</th></tr></thead><tbody>'+rows.map(r=>'<tr>'+cols.map(c=>'<td>'+safe(r[c[0]])+'</td>').join('')+'<td><div class="table-actions"><select data-intake-status="'+safe(r.id)+'"><option value="received"'+(r.status==='received'?' selected':'')+'>مستلم</option><option value="under_review"'+(r.status==='under_review'?' selected':'')+'>قيد المراجعة</option><option value="approved"'+(r.status==='approved'?' selected':'')+'>مقبول</option><option value="in_progress"'+(r.status==='in_progress'?' selected':'')+'>قيد التنفيذ</option><option value="completed"'+(r.status==='completed'?' selected':'')+'>مكتمل</option><option value="rejected"'+(r.status==='rejected'?' selected':'')+'>مرفوض</option></select><button class="btn" type="button" data-intake-action="status" data-id="'+safe(r.id)+'">تحديث الحالة</button><button class="btn secondary" type="button" data-intake-action="edit" data-id="'+safe(r.id)+'">تعديل</button><button class="btn danger" type="button" data-intake-action="delete" data-id="'+safe(r.id)+'">حذف</button></div></td></tr>').join('')+'</tbody></table></div>';
 }
 async function loadTable(table,columns,container,order='created_at'){const {data,error}=await db.from(table).select(columns).order(order,{ascending:false}).limit(100);if(error){$(container).textContent='تعذّر تحميل البيانات: '+error.message;return [];}return data||[];}
 async function refresh(){
  $('connectionState').textContent='متصل بقاعدة البيانات. يتم تحميل السجلات وفق صلاحيات المدير.';
- const [campaigns,cases,aid,orphans,volunteers,announcements,donations,sponsoredAds]=await Promise.all([
+ const [campaigns,cases,aid,orphans,volunteers,announcements,donations,sponsoredAds,expenses,auditRows]=await Promise.all([
   loadTable('campaigns','id,title,status,target_amount,currency,created_at','campaignTable'),
   loadTable('family_cases','id,case_code,region,household_size,status,priority,created_at','caseTable'),
   loadTable('assistance_requests','id,case_id,category,priority,status,created_at','aidTable'),
@@ -139,7 +161,9 @@ async function refresh(){
   loadTable('volunteers','id,full_name,phone,region,status,created_at','volunteerTable'),
   loadTable('announcements','id,title,is_published,created_at','announcementTable'),
   loadTable('donations','id,public_reference,amount,currency,payment_status,network,transaction_hash,verified_at,created_at','donationTable'),
-  loadTable('sponsored_ads','id,advertiser_name,title,price,currency,payment_status,status,starts_at,ends_at,created_at','sponsoredAdTable')
+  loadTable('sponsored_ads','id,advertiser_name,title,price,currency,payment_status,status,starts_at,ends_at,created_at','sponsoredAdTable'),
+  loadTable('campaign_expenses','id,campaign_id,description,category,amount,currency,status,receipt_reference,paid_at,created_at','expenseTable'),
+  loadTable('audit_logs','id,actor_id,action,table_name,record_id,details,created_at','auditTable')
  ]);
  $('campaignCount').textContent=campaigns.length;$('caseCount').textContent=cases.length;$('aidCount').textContent=aid.length;$('orphanCount').textContent=orphans.length;
  renderTable('campaignTable',campaigns,[['title','الحملة'],['target_amount','الهدف'],['currency','العملة'],['status','الحالة']]);
@@ -154,8 +178,13 @@ async function refresh(){
  renderTable('orphanTable',orphans,[['internal_code','رمز الملف'],['age_years','العمر'],['status','الحالة']]);
  renderTable('volunteerTable',volunteers,[['full_name','المتطوع'],['phone','التواصل'],['region','المنطقة'],['status','الحالة']]);
  renderTable('announcementTable',announcements,[['title','العنوان'],['is_published','منشور؟'],['created_at','تاريخ الإنشاء']]);
- renderTable('donationTable',donations,[['public_reference','الرقم المرجعي'],['amount','القيمة'],['currency','العملة'],['payment_status','حالة الدفع'],['network','الشبكة'],['transaction_hash','معرّف المعاملة'],['verified_at','تاريخ التحقق'],['created_at','تاريخ التسجيل']]);
+ $('donationTable').innerHTML=donations.length?'<div class="table-wrap"><table><thead><tr><th>المرجع</th><th>المبلغ</th><th>العملة</th><th>الدفع</th><th>الشبكة</th><th>TXID</th><th>إجراء</th></tr></thead><tbody>'+donations.map(r=>'<tr><td>'+safe(r.public_reference||r.payment_reference)+'</td><td>'+safe(r.amount)+'</td><td>'+safe(r.currency)+'</td><td>'+safe(r.payment_status)+'</td><td>'+safe(r.network)+'</td><td dir="ltr">'+safe(r.transaction_hash)+'</td><td>'+(r.payment_status==='confirmed'?'مؤكد':'<button class="btn" type="button" data-donation-action="confirm" data-id="'+safe(r.id)+'">تأكيد الاستلام</button>')+'</td></tr>').join('')+'</tbody></table></div>':'<div class="empty">لا توجد تبرعات مسجلة حتى الآن.</div>';
+ $('expenseTable').innerHTML=expenses.length?'<div class="table-wrap"><table><thead><tr><th>الوصف</th><th>المبلغ</th><th>العملة</th><th>الحالة</th><th>مرجع المستند</th><th>إجراء</th></tr></thead><tbody>'+expenses.map(r=>'<tr><td>'+safe(r.description)+'</td><td>'+safe(r.amount)+'</td><td>'+safe(r.currency)+'</td><td>'+safe(r.status)+'</td><td>'+safe(r.receipt_reference)+'</td><td>'+(r.status==='verified'?'تم التحقق':'<button class="btn" type="button" data-expense-action="verify" data-id="'+safe(r.id)+'">تأكيد الدفع والتحقق</button>')+'</td></tr>').join('')+'</tbody></table></div>':'<div class="empty">لا توجد مصروفات مسجلة حتى الآن.</div>';
  renderSponsoredAds(sponsoredAds);
+ renderTable('auditTable',auditRows,[['action','العملية'],['table_name','الجدول'],['record_id','السجل'],['details','تفاصيل غير شخصية'],['created_at','التاريخ']]);
+ const campaignOptions=campaigns.map(x=>'<option value="'+safe(x.id)+'">'+safe(x.title)+'</option>').join('');
+ $('donationCampaignSelect').innerHTML='<option value="">حملة سند العامة</option>'+campaignOptions;
+ $('expenseCampaignSelect').innerHTML='<option value="">مصروف عام</option>'+campaignOptions;
  renderTable('recentCampaigns',campaigns.slice(0,5),[['title','الحملة'],['status','الحالة'],['target_amount','الهدف']]);
  const options=cases.map(c=>'<option value="'+safe(c.id)+'">'+safe(c.case_code)+' — '+safe(c.region||'')+'</option>').join('');
  $('caseSelect').innerHTML='<option value="">اختر رمز الحالة</option>'+options;
@@ -209,6 +238,11 @@ $('publicIntakeTable').addEventListener('click',async e=>{
  const btn=e.target.closest('button[data-intake-action]');
  if(!btn)return;
  const id=btn.dataset.id;
+ if(btn.dataset.intakeAction==='status'){
+  const select=document.querySelector('[data-intake-status="'+CSS.escape(id)+'"]');const status=select?.value;if(!status)return;
+  btn.disabled=true;const {data:updated,error}=await db.from('public_aid_intake').update({status,status_updated_at:new Date().toISOString()}).eq('id',id).select('id');btn.disabled=false;
+  if(error||!updated?.length){alert('تعذر تحديث حالة الطلب: '+(error?.message||'لا توجد صلاحية.'));return;}await refresh();alert('تم تحديث حالة الطلب.');return;
+ }
  if(btn.dataset.intakeAction==='edit'){
   const {data,error}=await db.from('public_aid_intake').select('id,need_type,region,contact,details').eq('id',id).single();
   if(error||!data){alert('تعذّر فتح الطلب للتعديل: '+(error?.message||'لم يتم العثور على الطلب.'));return;}
@@ -274,6 +308,10 @@ await insertForm('aidForm','assistance_requests',v=>({case_id:v.case_id,category
 await insertForm('orphanForm','orphan_profiles',v=>({case_id:v.case_id,internal_code:v.internal_code.trim(),age_years:v.age_years?Number(v.age_years):null,status:v.status}));
 await insertForm('volunteerForm','volunteers',v=>({full_name:v.full_name.trim(),phone:v.phone||null,region:v.region||null,status:v.status,skills:v.skills?v.skills.split(',').map(s=>s.trim()).filter(Boolean):[]}));
 await insertForm('announcementForm','announcements',v=>({title:v.title.trim(),body:v.body,is_published:v.is_published==='true',published_at:v.is_published==='true'?new Date().toISOString():null,created_by:currentUser.id}));
+await insertForm('donationEntryForm','donations',v=>({campaign_id:v.campaign_id||null,amount:Number(v.amount),currency:v.currency,donor_name:v.donor_name||null,payment_reference:v.payment_reference.trim(),network:v.network||null,transaction_hash:v.transaction_hash||null,payment_status:'pending'}));
+await insertForm('campaignExpenseForm','campaign_expenses',v=>({campaign_id:v.campaign_id||null,description:v.description.trim(),category:v.category,amount:Number(v.amount),currency:v.currency,receipt_reference:v.receipt_reference||null,status:'pending',created_by:currentUser.id}));
+$('donationTable').addEventListener('click',async e=>{const btn=e.target.closest('button[data-donation-action="confirm"]');if(!btn)return;if(!confirm('هل تحققت من وصول هذا التحويل ومطابقة المبلغ والشبكة ورقم المعاملة؟'))return;btn.disabled=true;const {data,error}=await db.from('donations').update({payment_status:'confirmed',verified_at:new Date().toISOString()}).eq('id',btn.dataset.id).select('id');btn.disabled=false;if(error||!data?.length){alert('تعذر تأكيد التبرع: '+(error?.message||'لا توجد صلاحية.'));return;}await refresh();});
+$('expenseTable').addEventListener('click',async e=>{const btn=e.target.closest('button[data-expense-action="verify"]');if(!btn)return;if(!confirm('هل راجعت الإيصال وتأكدت أن هذا المصروف دُفع فعلًا؟'))return;btn.disabled=true;const {data,error}=await db.from('campaign_expenses').update({status:'verified',paid_at:new Date().toISOString(),verified_by:currentUser.id}).eq('id',btn.dataset.id).select('id');btn.disabled=false;if(error||!data?.length){alert('تعذر اعتماد المصروف: '+(error?.message||'لا توجد صلاحية.'));return;}await refresh();});
 await insertForm('sponsoredAdForm','sponsored_ads',v=>{
  const starts=v.starts_at?new Date(v.starts_at):new Date();const ends=new Date(v.ends_at);
  if(!Number.isFinite(ends.getTime())||ends<=starts)throw new Error('تأكد من أن تاريخ النهاية بعد تاريخ البداية.');
