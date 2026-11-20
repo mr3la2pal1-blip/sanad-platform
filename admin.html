@@ -34,7 +34,7 @@
   <button data-tab="campaigns">الحملات</button><button data-tab="cases">ملفات الأسر</button>
   <button data-tab="aid">طلبات المساعدة</button><button data-tab="publicIntake">طلبات الموقع الواردة</button><button data-tab="orphans">كفالة الأيتام</button>
   <button data-tab="volunteers">المتطوعون</button><button data-tab="announcements">الإعلانات</button><button data-tab="sponsoredAds">الإعلانات الممولة</button>
-  <button data-tab="finance">السجل المالي</button>
+  <button data-tab="finance">السجل المالي</button><button data-tab="notifications">التنبيهات</button><button data-tab="team">الصلاحيات</button>
  </nav><p class="note">وصول مقيّد حسب دور الحساب. لا تضف أسماء الأطفال أو عناوين الأسر في الملاحظات العامة.</p></aside>
  <main class="main">
   <div class="top"><div><h1 id="pageTitle">نظرة عامة</h1><div id="signedUser" class="muted"></div></div><div class="top-actions"><span class="pill">مدير عام</span><button id="logoutBtn" class="btn secondary">تسجيل الخروج</button></div></div>
@@ -85,7 +85,9 @@
    <div class="field"><label>بداية الإعلان</label><input name="starts_at" type="datetime-local"></div><div class="field"><label>نهاية الإعلان</label><input name="ends_at" type="datetime-local" required></div>
    <div class="field"><label>حالة الإعلان</label><select name="status"><option value="draft">مسودة — غير منشور</option><option value="published">جاهز للنشر بعد تأكيد الدفع</option></select></div><div><button class="btn" type="submit">حفظ الإعلان</button></div>
   </form></div><div class="panel"><h2>إدارة الإعلانات الممولة</h2><div id="sponsoredAdTable" class="empty">جارٍ التحميل…</div></div></section>
-<section id="finance" class="section">
+<section id="notifications" class="section"><div class="panel"><h2>التنبيهات الداخلية</h2><p class="subtle">تنبيهات تلقائية لطلبات المساعدة الجديدة والتبرعات المؤكدة والإعلانات المنشورة، وتظهر للمستخدمين المخولين فقط.</p><div id="notificationTable" class="empty">جارٍ التحميل…</div></div></section>
+  <section id="team" class="section"><div class="panel"><h2>إدارة أدوار الفريق</h2><p class="subtle">يمكن للمدير العام تعديل أدوار الحسابات الموجودة فقط. إنشاء حساب دخول جديد يتم من نظام المصادقة، وليس من هذه الشاشة.</p><div id="teamTable" class="empty">جارٍ التحميل…</div></div></section>
+  <section id="finance" class="section">
  <div class="panel"><h2>تسجيل تبرع وارد يدويًا</h2><p class="notice">يسجل التبرع أولًا بانتظار التحقق. لا تؤكد الاستلام إلا بعد مطابقة التحويل على الشبكة والتحقق من وصوله فعليًا.</p><form id="donationEntryForm" class="formgrid">
   <div class="field"><label>الحملة (اختياري)</label><select name="campaign_id" id="donationCampaignSelect"><option value="">حملة سند العامة</option></select></div>
   <div class="field"><label>المبلغ</label><input name="amount" type="number" min="0.01" step="0.01" required></div>
@@ -133,7 +135,7 @@ const SUPABASE_URL='https://vovpbesmqgvfpjxslzbx.supabase.co';
 const SUPABASE_KEY='sb_publishable_1T4fLsk02CYnxnJOFVGhtw_Mh-t9V3j';
 const db=createClient(SUPABASE_URL,SUPABASE_KEY);
 const $=id=>document.getElementById(id);
-const labels={overview:'نظرة عامة',campaigns:'الحملات',cases:'ملفات الأسر',aid:'طلبات المساعدة',publicIntake:'طلبات الموقع الواردة',orphans:'كفالة الأيتام',volunteers:'المتطوعون',announcements:'الإعلانات',sponsoredAds:'الإعلانات الممولة',finance:'السجل المالي'};
+const labels={overview:'نظرة عامة',campaigns:'الحملات',cases:'ملفات الأسر',aid:'طلبات المساعدة',publicIntake:'طلبات الموقع الواردة',orphans:'كفالة الأيتام',volunteers:'المتطوعون',announcements:'الإعلانات',sponsoredAds:'الإعلانات الممولة',finance:'السجل المالي',notifications:'التنبيهات',team:'الصلاحيات'};
 let currentUser=null;
 function safe(v){return String(v??'—').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 
@@ -153,7 +155,7 @@ function renderPublicIntake(rows){
 async function loadTable(table,columns,container,order='created_at'){const {data,error}=await db.from(table).select(columns).order(order,{ascending:false}).limit(100);if(error){$(container).textContent='تعذّر تحميل البيانات: '+error.message;return [];}return data||[];}
 async function refresh(){
  $('connectionState').textContent='متصل بقاعدة البيانات. يتم تحميل السجلات وفق صلاحيات المدير.';
- const [campaigns,cases,aid,orphans,volunteers,announcements,donations,sponsoredAds,expenses,auditRows]=await Promise.all([
+ const [campaigns,cases,aid,orphans,volunteers,announcements,donations,sponsoredAds,expenses,auditRows,notifications,team]=await Promise.all([
   loadTable('campaigns','id,title,status,target_amount,currency,created_at','campaignTable'),
   loadTable('family_cases','id,case_code,region,household_size,status,priority,created_at','caseTable'),
   loadTable('assistance_requests','id,case_id,category,priority,status,created_at','aidTable'),
@@ -163,7 +165,9 @@ async function refresh(){
   loadTable('donations','id,public_reference,amount,currency,payment_status,network,transaction_hash,verified_at,created_at','donationTable'),
   loadTable('sponsored_ads','id,advertiser_name,title,price,currency,payment_status,status,starts_at,ends_at,created_at','sponsoredAdTable'),
   loadTable('campaign_expenses','id,campaign_id,description,category,amount,currency,status,receipt_reference,paid_at,created_at','expenseTable'),
-  loadTable('audit_logs','id,actor_id,action,table_name,record_id,details,created_at','auditTable')
+  loadTable('audit_logs','id,actor_id,action,table_name,record_id,details,created_at','auditTable'),
+  loadTable('notifications','id,notification_type,title,body,link,read_at,created_at','notificationTable'),
+  loadTable('profiles','id,full_name,role,is_active,created_at','teamTable')
  ]);
  $('campaignCount').textContent=campaigns.length;$('caseCount').textContent=cases.length;$('aidCount').textContent=aid.length;$('orphanCount').textContent=orphans.length;
  renderTable('campaignTable',campaigns,[['title','الحملة'],['target_amount','الهدف'],['currency','العملة'],['status','الحالة']]);
@@ -185,6 +189,8 @@ async function refresh(){
  const campaignOptions=campaigns.map(x=>'<option value="'+safe(x.id)+'">'+safe(x.title)+'</option>').join('');
  $('donationCampaignSelect').innerHTML='<option value="">حملة سند العامة</option>'+campaignOptions;
  $('expenseCampaignSelect').innerHTML='<option value="">مصروف عام</option>'+campaignOptions;
+ $('notificationTable').innerHTML=notifications.length?'<div class="table-wrap"><table><thead><tr><th>العنوان</th><th>التفاصيل</th><th>التاريخ</th><th>الحالة</th><th>إجراء</th></tr></thead><tbody>'+notifications.map(n=>'<tr><td>'+safe(n.title)+'</td><td>'+safe(n.body)+'</td><td>'+safe(n.created_at)+'</td><td>'+(n.read_at?'مقروء':'جديد')+'</td><td>'+(n.read_at?'—':'<button class="btn secondary" type="button" data-notification-read="'+safe(n.id)+'">تحديد كمقروء</button>')+'</td></tr>').join('')+'</tbody></table></div>':'<div class="empty">لا توجد تنبيهات جديدة.</div>';
+ $('teamTable').innerHTML=team.length?'<div class="table-wrap"><table><thead><tr><th>الاسم</th><th>معرّف الحساب</th><th>الدور</th><th>الحالة</th><th>إجراء</th></tr></thead><tbody>'+team.map(u=>'<tr><td>'+safe(u.full_name)+'</td><td dir="ltr">'+safe(u.id)+'</td><td><select data-team-role="'+safe(u.id)+'"><option value="admin"'+(u.role==='admin'?' selected':'')+'>مدير عام</option><option value="accountant"'+(u.role==='accountant'?' selected':'')+'>محاسب</option><option value="researcher"'+(u.role==='researcher'?' selected':'')+'>باحث حالات</option><option value="distributor"'+(u.role==='distributor'?' selected':'')+'>مسؤول توزيع</option><option value="orphan_supervisor"'+(u.role==='orphan_supervisor'?' selected':'')+'>مشرف أيتام</option><option value="volunteer"'+(u.role==='volunteer'?' selected':'')+'>متطوع</option></select></td><td>'+(u.is_active?'نشط':'موقوف')+'</td><td><button class="btn" type="button" data-team-save="'+safe(u.id)+'">حفظ الدور</button></td></tr>').join('')+'</tbody></table></div>':'<div class="empty">لا توجد حسابات فريق.</div>';
  renderTable('recentCampaigns',campaigns.slice(0,5),[['title','الحملة'],['status','الحالة'],['target_amount','الهدف']]);
  const options=cases.map(c=>'<option value="'+safe(c.id)+'">'+safe(c.case_code)+' — '+safe(c.region||'')+'</option>').join('');
  $('caseSelect').innerHTML='<option value="">اختر رمز الحالة</option>'+options;
@@ -329,6 +335,8 @@ $('sponsoredAdTable').addEventListener('click',async e=>{
  await refresh();
 });
 
+$('notificationTable').addEventListener('click',async e=>{const btn=e.target.closest('button[data-notification-read]');if(!btn)return;btn.disabled=true;const {error}=await db.from('notifications').update({read_at:new Date().toISOString()}).eq('id',btn.dataset.notificationRead);if(error){btn.disabled=false;alert('تعذر تحديث التنبيه: '+error.message);return;}await refresh();});
+$('teamTable').addEventListener('click',async e=>{const btn=e.target.closest('button[data-team-save]');if(!btn)return;const id=btn.dataset.teamSave;const select=document.querySelector('[data-team-role="'+CSS.escape(id)+'"]');if(!select)return;if(id===currentUser.id&&select.value!=='admin'){alert('لا يمكنك تغيير دور حساب المدير الذي تستخدمه حاليًا.');return;}if(!confirm('هل تريد حفظ الدور الجديد لهذا الحساب؟'))return;btn.disabled=true;const {data,error}=await db.from('profiles').update({role:select.value}).eq('id',id).select('id');btn.disabled=false;if(error||!data?.length){alert('تعذر تحديث الدور: '+(error?.message||'لا توجد صلاحية.'));return;}await refresh();alert('تم تحديث دور الحساب.');});
 window.sanadLoginReady=true;
 </script>
 </body></html>
