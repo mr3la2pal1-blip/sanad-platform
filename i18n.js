@@ -163,7 +163,7 @@
     "المصروفات المسجلة":"Recorded expenses",
     "سجل التدقيق":"Audit log",
     "يسجل التغييرات المالية وتحديثات حالة الطلب دون نسخ أرقام الهوية أو بيانات الاتصال إلى سجل التدقيق.":"The audit log records financial changes and request-status updates without copying ID numbers or contact details."
-  });
+  };
   const pairs = Object.entries(dict).sort((a,b)=>b[0].length-a[0].length);
   let lang = 'ar';
   const getLang = () => {
