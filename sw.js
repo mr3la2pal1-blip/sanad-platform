@@ -1,13 +1,10 @@
-const C="sanad-cache-v25",A=["./","./index.html","./admin.html","./donate.html","./admin/index.html","./style.css","./app.js","./manifest.webmanifest","./icons/icon.svg"];
+const C="sanad-cache-v26",A=["./","./index.html","./admin.html","./donate.html","./admin/index.html","./style.css","./app.js","./public-sections.js","./manifest.webmanifest","./icons/icon.svg"];
 self.addEventListener("install",e=>{e.waitUntil(caches.open(C).then(c=>c.addAll(A)));self.skipWaiting()});
 self.addEventListener("activate",e=>e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==C).map(x=>caches.delete(x))))));
 self.addEventListener("fetch",e=>{
  if(e.request.method!=="GET")return;
  const u=new URL(e.request.url);
- if(u.origin===self.location.origin && (u.pathname==="/admin"||u.pathname==="/admin/")){
-  e.respondWith(Response.redirect(new URL("/admin.html"+u.search+u.hash,self.location.origin),302));
-  return;
- }
+ // Let the hosting rewrite serve admin.html while preserving the clean /admin URL.
  if(e.request.mode==="navigate"){
   e.respondWith(fetch(e.request).then(n=>{
    if(n.ok){const copy=n.clone();caches.open(C).then(c=>c.put(e.request,copy));}
