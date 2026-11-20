@@ -1,0 +1,22 @@
+{
+  "id": "/admin-app",
+  "name": "إدارة سند - لوحة الإدارة",
+  "short_name": "إدارة سند",
+  "description": "تطبيق مستقل وآمن لإدارة منصة سند",
+  "lang": "ar",
+  "dir": "rtl",
+  "start_url": "/admin",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#f5f8f6",
+  "theme_color": "#0d6b55",
+  "icons": [
+    {
+      "src": "/icons/admin-app.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
