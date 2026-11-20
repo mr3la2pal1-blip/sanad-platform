@@ -64,3 +64,44 @@ if(aidForm){aidForm.addEventListener('submit',async e=>{e.preventDefault();const
   list.innerHTML='<table><thead><tr><th>الرقم المرجعي</th><th>الحملة</th><th>المبلغ</th><th>تاريخ التأكيد</th><th>الحالة</th></tr></thead><tbody>'+rows.map(row=>'<tr><td dir="ltr">'+esc(row.public_reference)+'</td><td>'+esc(row.campaign_title)+'</td><td>'+esc(money(row.amount,row.currency))+'</td><td>'+esc(row.confirmed_at?new Date(row.confirmed_at).toLocaleString('ar'): '—')+'</td><td>مؤكد بعد التحقق</td></tr>').join('')+'</tbody></table>';
  }catch(error){console.error('Public donation ledger failed:',error);summary.innerHTML='<article>تعذر تحميل إجمالي التبرعات حاليًا.</article>';list.innerHTML='<p class="subtle">تعذر تحميل سجل التبرعات. يرجى المحاولة لاحقًا.</p>';}
 })();
+
+
+/* Public case tracker: exposes only a reference and workflow state, never applicant details. */
+(()=>{
+ const form=document.getElementById('aidTrackerForm');if(!form)return;
+ const result=document.getElementById('aidTrackerResult');
+ form.addEventListener('submit',async event=>{
+  event.preventDefault();const code=String(new FormData(form).get('reference_code')||'').trim().toUpperCase();
+  if(!/^SAN-[A-F0-9]{8}$/.test(code)){result.textContent='تحقق من رقم المتابعة. الصيغة المتوقعة SAN-XXXXXXXX.';return;}
+  const button=form.querySelector('button[type="submit"]');button.disabled=true;result.textContent='جارٍ البحث عن الطلب…';
+  try{
+   const response=await fetch('https://vovpbesmqgvfpjxslzbx.supabase.co/rest/v1/rpc/get_public_aid_request_status',{method:'POST',headers:{apikey:'sb_publishable_1T4fLsk02CYnxnJOFVGhtw_Mh-t9V3j',Authorization:'Bearer sb_publishable_1T4fLsk02CYnxnJOFVGhtw_Mh-t9V3j','Content-Type':'application/json'},body:JSON.stringify({p_reference_code:code})});
+   const data=await response.json();if(!response.ok)throw new Error(data.message||'تعذر الوصول إلى الخدمة');
+   const row=Array.isArray(data)?data[0]:data;
+   if(!row){result.textContent='لم نعثر على طلب بهذا الرقم. تأكد من كتابته كما وصلك.';return;}
+   const dates=new Intl.DateTimeFormat('ar',{dateStyle:'medium',timeStyle:'short'});
+   result.textContent='رقم الطلب: '+row.reference_code+' — الحالة: '+row.status+' — آخر تحديث: '+dates.format(new Date(row.last_updated_at));
+  }catch(error){result.textContent='تعذرت متابعة الطلب حاليًا. يرجى المحاولة لاحقًا.';console.error('Aid status lookup failed:',error);}
+  finally{button.disabled=false;}
+ });
+})();
+
+/* Public campaign and impact data comes only from confirmed donations and verified records. */
+(async()=>{
+ const host=document.getElementById('publicCampaignList'),impact=document.getElementById('publicImpactSummary');
+ if(!host||!impact)return;
+ const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ const money=(v,c)=>new Intl.NumberFormat('ar',{style:'currency',currency:String(c||'USD'),maximumFractionDigits:2}).format(Number(v||0));
+ const api='https://vovpbesmqgvfpjxslzbx.supabase.co/rest/v1/rpc/';
+ const headers={apikey:'sb_publishable_1T4fLsk02CYnxnJOFVGhtw_Mh-t9V3j',Authorization:'Bearer sb_publishable_1T4fLsk02CYnxnJOFVGhtw_Mh-t9V3j','Content-Type':'application/json'};
+ try{
+  const [cr,ir]=await Promise.all([fetch(api+'list_public_campaigns',{method:'POST',headers,body:'{}'}),fetch(api+'get_public_impact_summary',{method:'POST',headers,body:'{}'})]);
+  const [campaigns,summary]=await Promise.all([cr.json(),ir.json()]);
+  if(!cr.ok||!ir.ok)throw new Error('Public reports unavailable');
+  host.innerHTML=campaigns.length?campaigns.map(c=>'<article><h3>'+esc(c.title)+'</h3><p>'+esc(c.description||'حملة إنسانية منشورة من سند')+'</p><p>المساهمات المؤكدة: <strong>'+esc(money(c.raised_amount,c.currency))+'</strong></p>'+(c.target_amount?'<p>الهدف: '+esc(money(c.target_amount,c.currency))+'</p><progress max="100" value="'+Math.max(0,Math.min(100,Number(c.progress_percent)||0))+'"></progress><small>'+esc(c.progress_percent)+'% من الهدف</small>':'')+'<p>المصروفات المتحقق منها: '+esc(money(c.spent_amount,c.currency))+'</p></article>').join(''):'<article><p class="empty">لا توجد حملات منشورة حاليًا.</p></article>';
+  const row=Array.isArray(summary)?summary[0]:summary;
+  if(!row)throw new Error('No impact summary');
+  const renderTotals=(obj,label)=>Object.entries(obj||{}).map(([currency,total])=>'<p>'+esc(label)+' ('+esc(currency)+'): <strong>'+esc(money(total,currency))+'</strong></p>').join('');
+  impact.innerHTML='<article><h3>ملخص الأثر الموثق</h3>'+renderTotals(row.donations_by_currency,'التبرعات المؤكدة')+renderTotals(row.verified_expenses_by_currency,'المصروفات المتحقق منها')+'<p>عمليات توزيع مؤكدة: <strong>'+esc(row.verified_distributions)+'</strong></p><small>لا تُحتسب أي عملية توزيع إلا بعد تسجيل تأكيد الاستلام.</small></article>';
+ }catch(error){console.error('Public impact report failed:',error);host.innerHTML='<article class="empty">تعذر تحميل تقارير الحملات حاليًا.</article>';impact.innerHTML='';}
+})();
