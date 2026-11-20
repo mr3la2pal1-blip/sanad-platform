@@ -111,7 +111,7 @@ function renderTable(id,rows,cols){const el=$(id);if(!rows?.length){el.innerHTML
 function renderPublicIntake(rows){
  const el=$('publicIntakeTable');
  if(!rows?.length){el.innerHTML='<div class="empty">لا توجد سجلات حتى الآن</div>';return;}
- const cols=[['need_type','نوع الاحتياج'],['region','المنطقة'],['contact','وسيلة التواصل'],['details','التفاصيل'],['created_at','تاريخ الإرسال']];
+ const cols=[['full_name','الاسم الكامل'],['identity_number','رقم الهوية'],['phone','الهاتف'],['need_type','نوع الاحتياج'],['region','المنطقة'],['locality','البلدة/الحي'],['household_size','أفراد الأسرة'],['children_count','الأطفال'],['elderly_count','كبار السن'],['disability_count','ذوو الإعاقة'],['marital_status','الحالة الاجتماعية'],['details','تفاصيل الحالة'],['created_at','تاريخ الإرسال']];
  el.innerHTML='<div class="table-wrap"><table><thead><tr>'+cols.map(c=>'<th>'+c[1]+'</th>').join('')+'<th>الإجراءات</th></tr></thead><tbody>'+rows.map(r=>'<tr>'+cols.map(c=>'<td>'+safe(r[c[0]])+'</td>').join('')+'<td><div class="table-actions"><button class="btn secondary" type="button" data-intake-action="edit" data-id="'+safe(r.id)+'">تعديل</button><button class="btn danger" type="button" data-intake-action="delete" data-id="'+safe(r.id)+'">حذف</button></div></td></tr>').join('')+'</tbody></table></div>';
 }
 async function loadTable(table,columns,container,order='created_at'){const {data,error}=await db.from(table).select(columns).order(order,{ascending:false}).limit(100);if(error){$(container).textContent='تعذّر تحميل البيانات: '+error.message;return [];}return data||[];}
@@ -132,7 +132,7 @@ async function refresh(){
  renderTable('aidTable',aid,[['category','الاحتياج'],['priority','الأولوية'],['status','الحالة'],['created_at','التاريخ']]);
  const {data:adminCheck,error:adminCheckError}=await db.rpc('is_sanad_admin');
  const {count:intakeCount,error:intakeCountError}=await db.from('public_aid_intake').select('id',{count:'exact',head:true});
- const {data:publicIntake,error:publicIntakeError}=await db.from('public_aid_intake').select('id,need_type,region,contact,details,created_at').order('created_at',{ascending:false}).limit(100);
+ const {data:publicIntake,error:publicIntakeError}=await db.rpc('admin_list_public_aid_requests');
  const diag=['معرّف جلسة الدخول: '+currentUser.id,'فحص صلاحية المدير من داخل الجلسة: '+(adminCheckError?'خطأ '+adminCheckError.code+' — '+adminCheckError.message:String(adminCheck)),'عدد السجلات المرئية للجلسة: '+(intakeCountError?'خطأ '+intakeCountError.code+' — '+intakeCountError.message:String(intakeCount))];
  $('publicIntakeDiagnostic').textContent=diag.join(' | ');
  if(publicIntakeError){$('publicIntakeTable').textContent='تعذّر تحميل طلبات الموقع: '+publicIntakeError.message;}else{renderPublicIntake(publicIntake);}
