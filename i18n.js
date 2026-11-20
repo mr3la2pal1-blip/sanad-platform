@@ -167,6 +167,11 @@
   const pairs = Object.entries(dict).sort((a,b)=>b[0].length-a[0].length);
   let lang = 'ar';
   const getLang = () => {
+    const requested = new URLSearchParams(location.search).get('lang');
+    if (requested === 'ar' || requested === 'en') {
+      try { localStorage.setItem(KEY, requested); } catch {}
+      return requested;
+    }
     try { const saved=localStorage.getItem(KEY); if(saved==='ar'||saved==='en') return saved; } catch {}
     return /^ar(?:-|$)/i.test(navigator.language||'') ? 'ar' : 'en';
   };
