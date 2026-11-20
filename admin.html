@@ -198,8 +198,13 @@ async function refresh(){
 }
 async function enter(user){
  const {data:profile,error}=await db.from('profiles').select('full_name,role,is_active').eq('id',user.id).single();
- if(error||!profile||profile.role!=='admin'||!profile.is_active){await db.auth.signOut();$('authView').classList.remove('hidden');$('appView').classList.add('hidden');showError('هذا الحساب لا يملك صلاحية المدير العام أو أن الحساب غير نشط.');return;}
- currentUser=user;$('authView').classList.add('hidden');$('appView').classList.remove('hidden');$('signedUser').textContent=(profile.full_name||user.email)+' — '+user.email;await refresh();
+ const roleTabs={admin:['overview','campaigns','cases','aid','publicIntake','orphans','volunteers','announcements','sponsoredAds','finance','notifications','team'],accountant:['overview','campaigns','finance','notifications'],researcher:['overview','cases','aid','orphans','notifications'],distributor:['overview','cases','aid','notifications'],orphan_supervisor:['overview','cases','orphans','notifications'],volunteer:['overview','volunteers','notifications']};
+ if(error||!profile||!profile.is_active||!roleTabs[profile.role]){await db.auth.signOut();$('authView').classList.remove('hidden');$('appView').classList.add('hidden');showError('هذا الحساب غير مخول للدخول أو أنه غير نشط.');return;}
+ currentUser=user;
+ document.querySelectorAll('#nav button[data-tab]').forEach(button=>{button.hidden=!roleTabs[profile.role].includes(button.dataset.tab);});
+ const roleNames={admin:'مدير عام',accountant:'محاسب',researcher:'باحث حالات',distributor:'مسؤول توزيع',orphan_supervisor:'مشرف أيتام',volunteer:'متطوع'};
+ document.querySelector('.top .pill').textContent=roleNames[profile.role]||'عضو فريق';
+ $('authView').classList.add('hidden');$('appView').classList.remove('hidden');$('signedUser').textContent=(profile.full_name||user.email)+' — '+user.email;await refresh();
 }
 $('loginForm').addEventListener('submit',async e=>{
  e.preventDefault();
