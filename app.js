@@ -98,10 +98,10 @@ if(aidForm){aidForm.addEventListener('submit',async e=>{e.preventDefault();const
   const [cr,ir]=await Promise.all([fetch(api+'list_public_campaigns',{method:'POST',headers,body:'{}'}),fetch(api+'get_public_impact_summary',{method:'POST',headers,body:'{}'})]);
   const [campaigns,summary]=await Promise.all([cr.json(),ir.json()]);
   if(!cr.ok||!ir.ok)throw new Error('Public reports unavailable');
-  host.innerHTML=campaigns.length?campaigns.map(c=>'<article><h3>'+esc(c.title)+'</h3><p>'+esc(c.description||'حملة إنسانية منشورة من سند')+'</p><p>المساهمات المؤكدة: <strong>'+esc(money(c.raised_amount,c.currency))+'</strong></p>'+(c.target_amount?'<p>الهدف: '+esc(money(c.target_amount,c.currency))+'</p><progress max="100" value="'+Math.max(0,Math.min(100,Number(c.progress_percent)||0))+'"></progress><small>'+esc(c.progress_percent)+'% من الهدف</small>':'')+'<p>المصروفات المتحقق منها: '+esc(money(c.spent_amount,c.currency))+'</p></article>').join(''):'<article><p class="empty">لا توجد حملات منشورة حاليًا.</p></article>';
+  host.innerHTML=campaigns.length?campaigns.map(c=>'<article><h3>'+esc(c.title)+'</h3><p>'+esc(c.description||'حملة إنسانية منشورة من سند')+'</p>(c.target_amount?'<p>الهدف: '+esc(money(c.target_amount,c.currency))+'</p>':'')+'<p>المصروفات المتحقق منها: '+esc(money(c.spent_amount,c.currency))+'</p></article>').join(''):'<article><p class="empty">لا توجد حملات منشورة حاليًا.</p></article>';
   const row=Array.isArray(summary)?summary[0]:summary;
   if(!row)throw new Error('No impact summary');
   const renderTotals=(obj,label)=>Object.entries(obj||{}).map(([currency,total])=>'<p>'+esc(label)+' ('+esc(currency)+'): <strong>'+esc(money(total,currency))+'</strong></p>').join('');
-  impact.innerHTML='<article><h3>ملخص الأثر الموثق</h3>'+renderTotals(row.donations_by_currency,'التبرعات المؤكدة')+renderTotals(row.verified_expenses_by_currency,'المصروفات المتحقق منها')+'<p>عمليات توزيع مؤكدة: <strong>'+esc(row.verified_distributions)+'</strong></p><small>لا تُحتسب أي عملية توزيع إلا بعد تسجيل تأكيد الاستلام.</small></article>';
+  impact.innerHTML='<article><h3>ملخص الأثر الموثق</h3>'+renderTotals(row.verified_expenses_by_currency,'المصروفات المتحقق منها')+'<p>عمليات توزيع مؤكدة: <strong>'+esc(row.verified_distributions)+'</strong></p><small>لا تُحتسب أي عملية توزيع إلا بعد تسجيل تأكيد الاستلام.</small></article>';
  }catch(error){console.error('Public impact report failed:',error);host.innerHTML='<article class="empty">تعذر تحميل تقارير الحملات حاليًا.</article>';impact.innerHTML='';}
 })();
